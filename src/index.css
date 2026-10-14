@@ -1,1 +1,85 @@
 @import "tailwindcss";
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+
+/* dark: 문법이 <html data-theme="dark"> 기준으로 동작 (예외적인 경우에만 사용) */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* 실제 색상 값: 테마에 따라 바뀜 */
+:root {
+  --app-bg: #e9ecef;        /* 앱 배경 */
+  --panel-bg: #ffffff;      /* 내용 영역 */
+  --chrome-bg: #dfe3e8;     /* 타이틀바·사이드바·상태바 */
+  --hover-bg: #d3d8de;      /* 메뉴 hover */
+  --line: #c9cfd6;          /* 경계선 */
+  --fg: #1d2228;            /* 기본 글자 */
+  --fg-muted: #626c78;      /* 보조 글자 */
+  --accent: #2b59c3;        /* 강조 */
+  --accent-hover: #234aa6;
+  --on-accent: #ffffff;     /* 강조색 위 글자 */
+  --danger: #c23b3b;        /* 에러 */
+}
+
+[data-theme="dark"] {
+  --app-bg: #17191d;
+  --panel-bg: #202329;
+  --chrome-bg: #1b1e22;
+  --hover-bg: #2a2e35;
+  --line: #30353d;
+  --fg: #e4e7eb;
+  --fg-muted: #959faa;
+  --accent: #6f9bf2;
+  --accent-hover: #8aaef5;
+  --on-accent: #0f1a33;
+  --danger: #f07272;
+}
+
+/* Tailwind 클래스 이름으로 연결: bg-panel, text-fg, border-line ... */
+@theme inline {
+  --color-app: var(--app-bg);
+  --color-panel: var(--panel-bg);
+  --color-chrome: var(--chrome-bg);
+  --color-hover: var(--hover-bg);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+
+  /* 데스크톱 앱 밀도: 기본 13px */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-lg: 15px;
+  --text-xl: 18px;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+  }
+  html[data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-app text-fg font-sans text-base antialiased;
+    overflow: hidden; /* 페이지 전체 스크롤 없음, 안쪽 영역만 스크롤 */
+    cursor: default;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+}
