@@ -16,7 +16,7 @@ export function Button({ variant = "secondary", type = "button", className = "",
     <button 
       type={type}
       {...buttonProps}
-      className={`h-8 rounded-md px-3 font-medium disabled:pointer-events-none disabled:opacity-50 ${VARIANT_CLASS[variant]} ${className}`}
+      className={`h-9.5 rounded-md px-3 font-medium disabled:pointer-events-none disabled:opacity-50 ${VARIANT_CLASS[variant]} ${className}`}
     />
   );
 }

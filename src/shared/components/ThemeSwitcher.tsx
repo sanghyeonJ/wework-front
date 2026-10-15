@@ -25,7 +25,7 @@ export function ThemeSwitcher() {
             role="radio"
             aria-checked={selected}
             onClick={() => setMode(option.value)}
-            className={`h-6 rounded px-2.5 text-sm ${
+            className={`h-7 rounded px-2.5 text-sm ${
               selected
               ? "bg-panel text-fg ring-1 ring-line"
               : "text-fg-muted hover:text-fg"

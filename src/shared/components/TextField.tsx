@@ -19,7 +19,7 @@ export function TextField({id, label, hint, className = "", ...inputProps}: Text
         id={id}
         aria-describedby={hintId}
         {...inputProps}
-        className={`h-8 rounded-md border border-line bg-panel px-2.5 text-base ${className}`}
+        className={`h-9.5 rounded-md border border-line bg-panel px-2.5 text-base ${className}`}
       />
       {hint && (
         <p id={hintId} className="text-xs text-fg-muted">
