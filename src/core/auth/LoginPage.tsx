@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router";
 import { getErrorCode } from "../../shared/api/client";
 import { ThemeSwitcher } from "../../shared/components/ThemeSwitcher";
 import { useAuthStore } from "./store";
@@ -17,7 +16,6 @@ const INPUT_CLASS = "h-8 rounded-md border border-line bg-panel px-2.5 text-base
 
 export function LoginPage() {
   const login = useAuthStore((state) => state.login);
-  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,7 +32,6 @@ export function LoginPage() {
     setErrorMessage(null);
     try {
       await login(email.trim(), password);
-      navigate("/", { replace: true });
     } catch (error) {
       setErrorMessage(ERROR_MESSAGES[getErrorCode(error)] ?? DEFAULT_ERROR_MESSAGE);
       setSubmitting(false);
