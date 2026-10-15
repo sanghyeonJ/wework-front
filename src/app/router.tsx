@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router";
 import { LoginPage } from "../core/auth/LoginPage";
 import { GuestOnly, RequireAuth } from "../core/auth/RouteGuards";
 import { TempHome } from "./TempHome";
+import { InvitePage } from "../core/auth/InvitePage";
 
 export const router = createBrowserRouter([
 
@@ -12,7 +13,7 @@ export const router = createBrowserRouter([
     children: [{ path: "/login", element: <LoginPage /> }],
   },
   // 누구나
-  { path: "/invite", element: <div>초대 수락 화면 (5단계에서 교체)</div> },
+  { path: "/invite", element: <InvitePage /> },
   // 로그인한 사람만
   {
     element: <RequireAuth />,

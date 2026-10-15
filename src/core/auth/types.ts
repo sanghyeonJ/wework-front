@@ -23,3 +23,15 @@ export interface MeResponse{
   jobGradeName: string | null;
   jobTitleName: string | null;
 }
+
+export interface InvitationResponse {
+  email: string;
+  name: string;
+  companyName: string;
+  expiresAt: string;
+}
+
+export interface InvitationAcceptRequest {
+  token: string;
+  password: string;
+}

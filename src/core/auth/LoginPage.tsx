@@ -1,6 +1,5 @@
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import { getErrorCode } from "../../shared/api/client";
-import { ThemeSwitcher } from "../../shared/components/ThemeSwitcher";
 import { useAuthStore } from "./store";
 import { AuthWindow } from "./AuthWindow";
 import { TextField } from "../../shared/components/TextField";
@@ -15,8 +14,6 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 const DEFAULT_ERROR_MESSAGE = "로그인하지 못했습니다. 잠시 후 다시 시도해 주세요.";
 
-const INPUT_CLASS = "h-8 rounded-md border border-line bg-panel px-2.5 text-base";
-
 export function LoginPage() {
   const login = useAuthStore((state) => state.login);
 
@@ -27,7 +24,7 @@ export function LoginPage() {
 
   const canSubmit = email.trim() !== "" && password.trim() !== "" && !submitting;
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canSubmit) return;
 
@@ -67,7 +64,7 @@ export function LoginPage() {
 
         <TextField 
           id="password"
-          label="이메일"
+          label="비밀번호"
           type="password"
           autoComplete="current-password"
           value={password}
