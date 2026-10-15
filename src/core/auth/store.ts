@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { getErrorCode } from "../../shared/api/client";
+import { getErrorCode, onAuthFailure } from "../../shared/api/client";
 import { tokenStorage } from "../../shared/api/tokenStorage";
 import * as authApi from "./api";
 import type { MeResponse } from "./types";
@@ -64,3 +64,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ me: null, status: "guest" });
   }
 }))
+
+// 재발급 실패 등으로 인증이 끊기면 로그아웃 상태로 → 가드가 로그인 화면으로 이동
+onAuthFailure(() => {
+  useAuthStore.setState({ me: null, status: "guest" });
+});
