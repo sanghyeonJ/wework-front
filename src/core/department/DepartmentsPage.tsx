@@ -8,6 +8,15 @@ import { PageHeader } from "../../shared/components/PageHeader";
 import { Button } from "../../shared/components/Button";
 import { DepartmentTree } from "./DepartmentTree";
 import { DepartmentDetail } from "./DepartmentDetail";
+import { DepartmentFormDialog, type DepartmentFormTarget } from "./DepartmentFormDialog";
+import { Plus } from "lucide-react";
+
+// 대화상자 key: 대상이 바뀌면 새로 생성되도록
+function formKey(target: DepartmentFormTarget): string {
+  if (target.mode === "edit") return `edit-${target.department.id}`;
+  if (target.mode === "create-child") return `child-${target.parent.id}`;
+  return "root";
+}
 
 export function DepartmentsPage() {
   const [departments, setDepartments] = useState<DepartmentResponse[]>([]);
@@ -15,6 +24,7 @@ export function DepartmentsPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [formTarget, setFormTarget] = useState<DepartmentFormTarget | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -68,9 +78,15 @@ export function DepartmentsPage() {
           <Button onClick={reload}>다시 시도</Button>
         </div>
       ) : flatItems.length === 0 ? (
-        <p className="text-sm text-fg-muted">
-          아직 부서가 없습니다. 회사 전체를 나타내는 최상위 부서를 먼저 만드세요.
-        </p>
+        <div className="flex flex-col items-start gap-3">
+          <p className="text-sm text-fg-muted">
+            아직 부서가 없습니다. 회사 전체를 나타내는 최상위 부서를 먼저 만드세요.
+          </p>
+          <Button variant="primary" onClick={() => setFormTarget({ mode: "create-root" })}>
+            <Plus aria-hidden="true" className="size-4" />
+            최상위 부서 만들기
+          </Button>
+        </div>
       ) : (
         <div className="grid min-h-0 flex-1 items-start gap-4 md:grid-cols-[minmax(16rem,1fr)_2fr]">
           {/* 왼쪽: 트리 */}
@@ -86,8 +102,30 @@ export function DepartmentsPage() {
           </nav>
 
           {/* 오른쪽: 상세 */}
-          {selected && <DepartmentDetail department={selected} parentName={parentName} />}
+          {selected && (
+            <DepartmentDetail 
+              department={selected} 
+              parentName={parentName} 
+              onEdit={() => setFormTarget({ mode: "edit", department: selected })}
+              onAddChild={() => setFormTarget({ mode: "create-child", parent: selected })}
+            />
+          )}
         </div>
+      )}
+
+      {/* 추가·수정 대화상자 */}
+      {formTarget && (
+        <DepartmentFormDialog 
+          key={formKey(formTarget)}
+          target={formTarget}
+          flatItems={flatItems}
+          onClose={() => setFormTarget(null)}
+          onSaved={() => {
+            setFormTarget(null);
+            reload();
+          }}
+          onStale={reload}
+        />
       )}
     </div>
   );
