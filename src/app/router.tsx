@@ -7,6 +7,7 @@ import { AppLayout } from "./AppLayout";
 
 import { PlaceholderPage } from "../shared/components/PlaceholderPage";
 import { PositionsPage } from "../core/position/PositionsPage";
+import { DepartmentsPage } from "../core/department/DepartmentsPage";
 
 export const router = createBrowserRouter([
 
@@ -29,7 +30,7 @@ export const router = createBrowserRouter([
           {
             element: <RequireRole roles={["COMPANY_ADMIN"]} />,  // 여러 권한 혀용을 대비한 배열로
             children: [
-              { path: "/company/departments", element: <PlaceholderPage title="부서" /> },
+              { path: "/company/departments", element: <DepartmentsPage /> },
               { path: "/company/positions", element: <PositionsPage /> },
               { path: "/company/members", element: <PlaceholderPage title="사원" /> },
             ]
