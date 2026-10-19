@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useState, type SubmitEvent } from "react";
 import { collectSubtreeIds, type DepartmentNode, type FlatDepartment } from "./tree";
 import { createDepartment, updateDepartment } from "./api";
 import { getErrorCode } from "../../shared/api/client";
