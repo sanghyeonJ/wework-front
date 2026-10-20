@@ -25,8 +25,6 @@ const STATUS_STYLES: Record<MemberStatus, string> = {
   RESIGNED: "text-fg-muted ring-line",
 };
 
-const FILTER_SELECT_CLASS = "h-9.5 rounded-md border border-line bg-panel px-2";
-
 // 주소의 값 → 검색 조건 (잘못된 값이면 무시)
 function parseStatus(value: string | null): MemberStatus | undefined {
   return STATUSES.find((status) => status === value);
@@ -42,6 +40,7 @@ export function MembersPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const status = parseStatus(searchParams.get("status"));
   const departmentId = parsePositiveNumber(searchParams.get("departmentId"));
+  const includeSub = searchParams.get("includeSub") !== "0";  // 기본은 포함, 꺼둔 경우만 주소에 "0"
   const keyword = searchParams.get("keyword") ?? "";
   const page = (parsePositiveNumber(searchParams.get("page")) ?? 1) - 1;  // 주소는 1부터, API는 0부터
 
@@ -53,7 +52,14 @@ export function MembersPage() {
   // 사원 목록: 조건이 바뀔 때마다 조회
   useEffect(() => {
     let ignore = false;
-    getMembers({ status, departmentId, keyword: keyword || undefined, page, size: PAGE_SIZE })
+    getMembers({ 
+      status, 
+      departmentId, 
+      includeSubDepartments: departmentId ? includeSub : undefined,
+      keyword: keyword || undefined, 
+      page, 
+      size: PAGE_SIZE 
+    })
       .then((result) => {
         if (ignore) return;
         setData(result);
@@ -66,7 +72,7 @@ export function MembersPage() {
     return () => {
       ignore = true;
     }
-  }, [status, departmentId, keyword, page]);
+  }, [status, departmentId, includeSub, keyword, page]);
 
   // 부서 필터 선택지: 처음 한 번 조회 (실패하면 선택지 없이 표시)
   useEffect(() => {
@@ -157,6 +163,20 @@ export function MembersPage() {
             </option>
           ))}
         </Select>
+        <label
+          className={`flex h-9.5 select-none items-center gap-2 ${
+            departmentId ? "" : "text-fg-muted opacity-60"
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={includeSub}
+            disabled={departmentId === undefined}
+            onChange={(e) => updateParams({ includeSub: e.target.checked ? null : "0" })}
+            className="size-4 accent-accent"
+          />
+          하위 부서 포함
+        </label>
       </div>
 
       {/* 목록 */}

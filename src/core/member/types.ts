@@ -21,6 +21,7 @@ export interface MemberResponse {
 export interface MemberSearchParams {
   status?: MemberStatus;
   departmentId?: number;
+  includeSubDepartments?: boolean; // true면 하위 부서 사원 포함 (기본 false = 직접 소속만)
   keyword?: string;
   page?: number; // 0부터
   size?: number;
