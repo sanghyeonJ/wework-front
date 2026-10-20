@@ -8,6 +8,7 @@ import { AppLayout } from "./AppLayout";
 import { PlaceholderPage } from "../shared/components/PlaceholderPage";
 import { PositionsPage } from "../core/position/PositionsPage";
 import { DepartmentsPage } from "../core/department/DepartmentsPage";
+import { MembersPage } from "../core/member/MembersPage";
 
 export const router = createBrowserRouter([
 
@@ -32,7 +33,7 @@ export const router = createBrowserRouter([
             children: [
               { path: "/company/departments", element: <DepartmentsPage /> },
               { path: "/company/positions", element: <PositionsPage /> },
-              { path: "/company/members", element: <PlaceholderPage title="사원" /> },
+              { path: "/company/members", element: <MembersPage /> },
             ]
           },
           // 최고관리자 (백엔드 /api/admin/**)

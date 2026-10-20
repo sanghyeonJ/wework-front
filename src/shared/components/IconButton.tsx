@@ -12,7 +12,7 @@ export function IconButton({ label, className = "", children, ...buttonProps }: 
       aria-label={label}
       title={label}
       {...buttonProps}
-      className={`flex size-8 items-center justify-center rounded-md text-fg-muted hover:bg-hover hover:text-fg ${className}`}
+      className={`flex size-8 items-center justify-center rounded-md text-fg-muted hover:bg-hover hover:text-fg disabled:pointer-events-none disabled:opacity-40 ${className}`}
     >
       {children}
     </button>
