@@ -1,15 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import type { DepartmentResponse } from "./types";
-import { getDepartments } from "./api";
+import { deleteDepartment, getDepartments } from "./api";
 import { toDepartmentErrorMessage } from "./errorMessages";
 import { getErrorCode } from "../../shared/api/client";
-import { buildTree, flattenTree } from "./tree";
+import { buildTree, flattenTree, type DepartmentNode } from "./tree";
 import { PageHeader } from "../../shared/components/PageHeader";
 import { Button } from "../../shared/components/Button";
 import { DepartmentTree } from "./DepartmentTree";
 import { DepartmentDetail } from "./DepartmentDetail";
 import { DepartmentFormDialog, type DepartmentFormTarget } from "./DepartmentFormDialog";
 import { Plus } from "lucide-react";
+import { DepartmentLeaderDialog } from "./DepartmentLeaderDialog";
+import { ConfirmDialog } from "../../shared/components/ConfirmDialog";
 
 // 대화상자 key: 대상이 바뀌면 새로 생성되도록
 function formKey(target: DepartmentFormTarget): string {
@@ -19,12 +21,19 @@ function formKey(target: DepartmentFormTarget): string {
 }
 
 export function DepartmentsPage() {
+  // 목록
   const [departments, setDepartments] = useState<DepartmentResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  // 대화상자
   const [formTarget, setFormTarget] = useState<DepartmentFormTarget | null>(null);
+  const [leaderTarget, setLeaderTarget] = useState<DepartmentNode | null>(null);
+  // 삭제
+  const [deleteTarget, setDeleteTarget] = useState<DepartmentNode | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -59,6 +68,30 @@ export function DepartmentsPage() {
   const parentName = selected
     ? (departments.find((department) => department.id === selected.parentId)?.name ?? null)
     : null;
+
+  function closeDelete() {
+    setDeleteTarget(null);
+    setDeleteError(null);
+  }
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteDepartment(deleteTarget.id);
+      setSelectedId(deleteTarget.parentId);  // 삭제 후 상위 부서 선택
+      closeDelete();
+      reload();
+    } catch (error) {
+      const code = getErrorCode(error);
+      setDeleteError(toDepartmentErrorMessage(code));
+      if (code === "DEPARTMENT_NOT_FOUND") reload();
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   return (
     <div className="flex h-full flex-col gap-4 p-6">
@@ -108,6 +141,8 @@ export function DepartmentsPage() {
               parentName={parentName} 
               onEdit={() => setFormTarget({ mode: "edit", department: selected })}
               onAddChild={() => setFormTarget({ mode: "create-child", parent: selected })}
+              onChangeLeader={() => setLeaderTarget(selected)}
+              onDelete={() => setDeleteTarget(selected)}
             />
           )}
         </div>
@@ -127,6 +162,38 @@ export function DepartmentsPage() {
           onStale={reload}
         />
       )}
+
+      {/* 부서장 지정 대화상자 */}
+      {leaderTarget && (
+        <DepartmentLeaderDialog 
+          key={leaderTarget.id}
+          department={leaderTarget}
+          onClose={() => setLeaderTarget(null)}
+          onSaved={() => {
+            setLeaderTarget(null);
+            reload();
+          }}
+          onStale={reload}
+        />
+      )}
+
+      {/* 삭제 확인창 */}
+      <ConfirmDialog 
+        open={deleteTarget !== null}
+        title="부서 삭제"
+        message={
+          <>
+            <strong className="font-semibold">{deleteTarget?.name}</strong> 부서를 삭제합니다.<br />
+            하위 부서나 소속 사원(초대 중 포함)이 있으면 삭제할 수 없습니다. <br />
+            퇴사한 사원의 부서기록은 그대로 남습니다.
+          </>
+        }
+        confirmLabel="삭제"
+        busy={deleting}
+        errorMessage={deleteError}
+        onConfirm={() => void handleDelete()}
+        onClose={closeDelete}
+      />
     </div>
   );
 }
