@@ -1,4 +1,5 @@
 import type { SelectHTMLAttributes } from "react";
+import { Select } from "./Select";
 
 interface SelectFieldProps extends SelectHTMLAttributes<HTMLSelectElement> {
   id: string;
@@ -15,14 +16,9 @@ export function SelectField({ id, label, hint, className = "", children, ...sele
       <label htmlFor={id} className="text-sm text-fg-muted">
         {label}
       </label>
-      <select
-        id={id}
-        aria-describedby={hintId}
-        {...selectProps}
-        className={`h-9.5 rounded-md border border-line bg-panel px-2 text-base disabled:opacity-60 ${className}`}
-      >
+      <Select id={id} aria-describedby={hintId} {...selectProps} className={className}>
         {children}
-      </select>
+      </Select>
       {hint && (
         <p id={hintId} className="text-xs text-fg-muted">
           {hint}

@@ -13,6 +13,7 @@ import { Button } from "../../shared/components/Button";
 import { Search } from "lucide-react";
 import { ROLE_LABELS, STATUS_LABELS } from "./labels";
 import { Pagination } from "../../shared/components/Pagination";
+import { Select } from "../../shared/components/Select";
 
 const PAGE_SIZE = 20;
 const STATUSES: MemberStatus[] = ["INVITED", "ACTIVE", "RESIGNED"];
@@ -131,22 +132,23 @@ export function MembersPage() {
           </Button>
         </form>
 
-        <select
+        <Select
           aria-label="상태"
           value={status ?? ""}
           onChange={(e) => updateParams({ status: e.target.value })}
-          className={FILTER_SELECT_CLASS}
         >
           <option value="">상태: 전체</option>
           {STATUSES.map((value) => (
-            <option key={value} value={value}>{STATUS_LABELS[value]}</option>
+            <option key={value} value={value}>
+              {STATUS_LABELS[value]}
+            </option>
           ))}
-        </select>
-        <select
+        </Select>
+
+        <Select
           aria-label="부서"
           value={departmentId ?? ""}
           onChange={(e) => updateParams({ departmentId: e.target.value })}
-          className={FILTER_SELECT_CLASS}
         >
           <option value="">부서: 전체</option>
           {departmentOptions.map(({ node, depth }) => (
@@ -154,7 +156,7 @@ export function MembersPage() {
               {`${INDENT.repeat(depth)}${node.name}`}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       {/* 목록 */}
