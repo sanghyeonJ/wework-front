@@ -26,3 +26,32 @@ export interface MemberSearchParams {
   size?: number;
   sort?: string; // 예: "name,asc"
 }
+
+// 계정 발급 (항상 EMPLOYEE·INVITED로 생성)
+export interface MemberCreateRequest {
+  email: string;
+  name: string;
+  departmentId: number | null;
+  jobGradeId: number | null;
+  jobTitleId: number | null;
+  hireDate: string | null;
+}
+
+// 정보 수정 (보낸 값 = 새 값, null이면 해제)
+export interface MemberUpdateRequest {
+  name: string;
+  departmentId: number | null;
+  jobGradeId: number | null;
+  jobTitleId: number | null;
+  hireDate: string | null;
+}
+
+// 권한 변경으로 줄 수 있는 권한 (최고관리자 제외)
+export type AssignableRole = Exclude<MemberRole, "SUPER_ADMIN">;
+
+// 발급·초대 재발급 응답
+export interface MemberInviteResponse {
+  member: MemberResponse;
+  inviteUrl: string;
+  expiresAt: string;
+}

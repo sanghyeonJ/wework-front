@@ -5,11 +5,7 @@ import { ThemeSwitcher } from "../shared/components/ThemeSwitcher";
 import { NAV_SECTIONS } from "./navigation";
 import { ChevronDown } from "lucide-react";
 
-const ROLE_LABELS: Record<MemberRole, string> = {
-  SUPER_ADMIN: "최고관리자",
-  COMPANY_ADMIN: "기업관리자",
-  EMPLOYEE: "사원"
-}
+import { ROLE_LABELS } from "../core/member/labels";
 
 // 로그인 후 모든 화면의 공통 틀
 export function AppLayout() {
