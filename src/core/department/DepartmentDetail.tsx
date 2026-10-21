@@ -2,10 +2,12 @@ import { useId } from "react";
 import type { DepartmentNode } from "./tree";
 import { Button } from "../../shared/components/Button";
 import { Pencil, Plus, Trash2, UserCog } from "lucide-react";
+import { DepartmentMembers } from "./DepartmentMembers";
 
 interface DepartmentDetailProps {
   department: DepartmentNode;
   parentName: string | null;
+  reloadKey: number;
   onEdit: () => void;
   onAddChild: () => void;
   onChangeLeader: () => void;
@@ -13,7 +15,7 @@ interface DepartmentDetailProps {
 }
 
 // 선택한 부서의 정보
-export function DepartmentDetail({ department, parentName, onEdit, onAddChild, onChangeLeader, onDelete }: DepartmentDetailProps) {
+export function DepartmentDetail({ department, parentName, reloadKey, onEdit, onAddChild, onChangeLeader, onDelete }: DepartmentDetailProps) {
   const headingId = useId();
 
   return (
@@ -45,6 +47,12 @@ export function DepartmentDetail({ department, parentName, onEdit, onAddChild, o
         <dt className="text-fg-muted">하위 부서</dt>
         <dd>{department.children.length}개</dd>
       </dl>
+
+      <DepartmentMembers 
+        key={department.id}
+        departmentId={department.id}
+        reloadKey={reloadKey}
+      />
 
       {/* 작업 버튼 */}
       <div className="flex flex-wrap gap-2 border-t border-line bg-chrome px-4 py-3">

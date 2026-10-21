@@ -139,6 +139,7 @@ export function DepartmentsPage() {
             <DepartmentDetail 
               department={selected} 
               parentName={parentName} 
+              reloadKey={reloadKey}
               onEdit={() => setFormTarget({ mode: "edit", department: selected })}
               onAddChild={() => setFormTarget({ mode: "create-child", parent: selected })}
               onChangeLeader={() => setLeaderTarget(selected)}
