@@ -16,6 +16,7 @@ import { Pagination } from "../../shared/components/Pagination";
 import { Select } from "../../shared/components/Select";
 import { MemberCreateDialog } from "./MemberCreateDialog";
 import { LeaderBadge } from "./LeaderBadge";
+import { MemberDetailDialog } from "./MemberDetailDialog";
 
 const PAGE_SIZE = 20;
 const STATUSES: MemberStatus[] = ["INVITED", "ACTIVE", "RESIGNED"];
@@ -52,6 +53,7 @@ export function MembersPage() {
   const [departments, setDepartments] = useState<DepartmentResponse[]>([]);
   const [reloadKey, setReloadKey] = useState(0);
   const [createOpen, setCreateOpen] = useState(false);
+  const [detailTarget, setDetailTarget] = useState<MemberResponse | null>(null);
 
   // 사원 목록: 조건이 바뀔 때마다 조회
   useEffect(() => {
@@ -220,13 +222,20 @@ export function MembersPage() {
                   {data.content.map((member) => (
                     <tr
                       key={member.id}
+                      onClick={() => setDetailTarget(member)}
                       className={`border-b border-line last:border-b-0 hover:bg-hover/50 ${
                         member.status === "RESIGNED" ? "text-fg-muted opacity-40" : ""
                       }`}
                     >
                       <td className="px-4 py-2">
                         <span className="flex items-center gap-1.5">
-                          <span className="font-medium">{member.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => setDetailTarget(member)}
+                            className="font-medium hover:underline"
+                          >
+                            {member.name}
+                          </button>
                           {member.leader && <LeaderBadge />}
                         </span>
                       </td>
@@ -261,6 +270,15 @@ export function MembersPage() {
         <MemberCreateDialog
           onClose={() => setCreateOpen(false)}
           onCreated={() => setReloadKey((key) => key + 1)}
+        />
+      )}
+
+      {detailTarget && (
+        <MemberDetailDialog
+          key={detailTarget.id}
+          member={detailTarget}
+          onClose={() => setDetailTarget(null)}
+          onChanged={() => setReloadKey((key) => key + 1)}
         />
       )}
     </div>

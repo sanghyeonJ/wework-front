@@ -25,20 +25,29 @@ export function toNullableId(value: string): number | null {
   return value === "" ? null : Number(value);
 }
 
+// 5 → "5", null → "" (수정할 때 기존 값을 입력칸에 채우기)
+export function fromNullableId(value: number | null): string {
+  return value === null ? "" : String(value);
+}
+
 interface MemberFormFieldsProps {
   idPrefix: string;
   values: MemberFormValues;
   options: MemberFormOptions;
-  onChange: (field: keyof MemberFormValues, value: string) => void
+  onChange: (field: keyof MemberFormValues, value: string) => void;
+  nameAutoFocus?: boolean;  // 불러온 뒤 그려지는 폼에서 이름 칸에 첫 포커스
+  departmentDisabled?: boolean;  // 부서장이면 부서 변경 불가
+  departmentHint?: string;
 }
 
 // 사원 발급·수정 공용 입력칸 (이메일 제외)
-export function MemberFormFields({ idPrefix, values, options, onChange }: MemberFormFieldsProps) {
+export function MemberFormFields({ idPrefix, values, options, onChange, nameAutoFocus = false, departmentDisabled = false, departmentHint }: MemberFormFieldsProps) {
   return (
     <>
       <TextField 
         id={`${idPrefix}-name`}
         label="이름"
+        autoFocus={nameAutoFocus}
         maxLength={50}
         value={values.name}
         onChange={(e) => onChange("name", e.target.value)}
@@ -47,6 +56,8 @@ export function MemberFormFields({ idPrefix, values, options, onChange }: Member
       <SelectField
         id={`${idPrefix}-department`}
         label="부서"
+        disabled={departmentDisabled}
+        hint={departmentHint}
         value={values.departmentId}
         onChange={(e) => onChange("departmentId", e.target.value)}
       >
