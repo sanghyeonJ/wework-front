@@ -220,7 +220,9 @@ export function MembersPage() {
                   {data.content.map((member) => (
                     <tr
                       key={member.id}
-                      className="border-b border-line last:border-b-0 hover:bg-hover/50"
+                      className={`border-b border-line last:border-b-0 hover:bg-hover/50 ${
+                        member.status === "RESIGNED" ? "text-fg-muted opacity-40" : ""
+                      }`}
                     >
                       <td className="px-4 py-2">
                         <span className="flex items-center gap-1.5">
