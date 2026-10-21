@@ -1,16 +1,24 @@
 import { X } from "lucide-react";
 import { useEffect, useId, useRef, type ReactNode } from "react";
 
+type DialogSize = "md" | "lg";
+
+const SIZE_CLASS: Record<DialogSize, string> = {
+  md: "max-w-md", // 448px: 확인창, 짧은 폼
+  lg: "max-w-xl", // 576px: 입력칸이 많은 폼
+};
+
 interface DialogProps {
   open: boolean;
   title: string;
   onClose: () => void;
+  size?: DialogSize;
   footer?: ReactNode;
   children: ReactNode;
 }
 
 // 브라우저 기본 <dialog>를 사용하는 대화상자 (Esc 닫기, 포커스 가두기는 브라우저가 처리)
-export function Dialog({ open, title, onClose, footer, children }: DialogProps) {
+export function Dialog({ open, title, onClose, size = "md", footer, children }: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 
@@ -31,12 +39,12 @@ export function Dialog({ open, title, onClose, footer, children }: DialogProps) 
       ref={dialogRef}
       onClose={onClose}
       aria-labelledby={titleId}
-      className="m-auto w-[calc(100%-2rem)] max-w-md overflow-hidden rounded-lg border border-line bg-panel p-0 text-fg shadow-xl backdrop:bg-black/40"
+      className={`m-auto w-[calc(100%-2rem)] ${SIZE_CLASS[size]} overflow-hidden rounded-lg border border-line bg-panel p-0 text-fg shadow-xl backdrop:bg-black/40`}
     >
       {/* 열려 있을 때만 내용 생성 → 다시 열면 입력값이 초기화됨 */}
       {open && (
-        <>
-          <div className="flex h-12 select-none items-center justify-between border-b border-line bg-chrome pl-5 pr-2">
+        <div className="flex max-h-[calc(100dvh-4rem)] flex-col">
+          <div className="flex h-12 shrink-0 select-none items-center justify-between border-b border-line bg-chrome pl-5 pr-2">
             <h2 id={titleId} className="font-semibold">
               {title}
             </h2>
@@ -50,14 +58,14 @@ export function Dialog({ open, title, onClose, footer, children }: DialogProps) 
             </button>
           </div>
 
-          <div className="px-5 py-4">{children}</div>
+          <div className="min-h-0 overflow-y-auto px-5 py-4">{children}</div>
 
           {footer && (
-            <div className="flex justify-end gap-2 border-t border-line bg-chrome px-5 py-3">
+            <div className="flex shrink-0 justify-end gap-2 border-t border-line bg-chrome px-5 py-3">
               {footer}
             </div>
           )}
-        </>
+        </div>
       )}
     </dialog>
   );

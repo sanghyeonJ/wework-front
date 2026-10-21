@@ -7,6 +7,7 @@ import { AuthWindow } from "./AuthWindow";
 import { isValidPassword, PASSWORD_HINT } from "./passwordRule";
 import { TextField } from "../../shared/components/TextField";
 import { Button } from "../../shared/components/Button";
+import { formatDateTime } from "../../shared/utils/format";
 
 // 링크 자체를 쓸 수 없는 경우의 문구
 const LINK_ERROR_MESSAGES: Record<string, string> = {
@@ -205,9 +206,4 @@ function Notice({ title, message }: {title: string, message: string}) {
       </Button>
     </div>
   );
-}
-
-// 날짜·시간 표시 (다국어 모듈 때 공통 유틸로 이동)
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString("ko-KR", { dateStyle: "medium", timeStyle: "short" });
 }
