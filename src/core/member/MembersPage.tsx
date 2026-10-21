@@ -10,10 +10,11 @@ import { getDepartments } from "../department/api";
 import { buildTree, flattenTree } from "../department/tree";
 import { PageHeader } from "../../shared/components/PageHeader";
 import { Button } from "../../shared/components/Button";
-import { Search } from "lucide-react";
+import { Search, UserPlus } from "lucide-react";
 import { ROLE_LABELS, STATUS_LABELS } from "./labels";
 import { Pagination } from "../../shared/components/Pagination";
 import { Select } from "../../shared/components/Select";
+import { MemberCreateDialog } from "./MemberCreateDialog";
 
 const PAGE_SIZE = 20;
 const STATUSES: MemberStatus[] = ["INVITED", "ACTIVE", "RESIGNED"];
@@ -48,6 +49,8 @@ export function MembersPage() {
   const [data, setData] = useState<PageResponse<MemberResponse> | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [departments, setDepartments] = useState<DepartmentResponse[]>([]);
+  const [reloadKey, setReloadKey] = useState(0);
+  const [createOpen, setCreateOpen] = useState(false);
 
   // 사원 목록: 조건이 바뀔 때마다 조회
   useEffect(() => {
@@ -72,7 +75,7 @@ export function MembersPage() {
     return () => {
       ignore = true;
     }
-  }, [status, departmentId, includeSub, keyword, page]);
+  }, [status, departmentId, includeSub, keyword, page, reloadKey]);
 
   // 부서 필터 선택지: 처음 한 번 조회 (실패하면 선택지 없이 표시)
   useEffect(() => {
@@ -119,13 +122,19 @@ export function MembersPage() {
       <PageHeader 
         title="사원"
         description="계정 발급, 정보 수정, 권한 변경, 퇴사 처리를 할 수 있습니다."
+        actions={
+          <Button variant="primary" onClick={() => setCreateOpen(true)}>
+            <UserPlus aria-hidden="true" className="size-4" />
+            계정 발급
+          </Button>
+        }
       />
 
       {/* 검색·필터 */}
       <div className="flex flex-wrap items-center gap-2">
         <form role="search" onSubmit={handleSearch} className="flex gap-2">
           <input 
-            type="text"
+            type="search"
             aria-label="이름 또는 이메일 검색"
             placeholder="이름·이메일 검색"
             value={keywordInput}
@@ -238,6 +247,13 @@ export function MembersPage() {
             onChange={(next) => updateParams({ page: String(next + 1) })}
           />
         </>
+      )}
+
+      {createOpen && (
+        <MemberCreateDialog
+          onClose={() => setCreateOpen(false)}
+          onCreated={() => setReloadKey((key) => key + 1)}
+        />
       )}
     </div>
   );

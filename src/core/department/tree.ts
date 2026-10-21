@@ -49,3 +49,10 @@ export function collectSubtreeIds(node: DepartmentNode): Set<number> {
   }
   return ids;
 }
+
+// 선택 상자용 들여쓰기 이름 (일반 공백은 합쳐지므로 줄바꿈 없는 공백 사용)
+const INDENT = "\u00A0\u00A0\u00A0\u00A0";
+
+export function indentLabel(name: string, depth: number): string {
+  return `${INDENT.repeat(depth)}${name}`;
+}
