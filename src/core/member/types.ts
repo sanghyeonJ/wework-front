@@ -15,6 +15,7 @@ export interface MemberResponse {
   jobTitleId: number | null;
   jobTitleName: string | null;
   hireDate: string | null;
+  leader: boolean;
 }
 
 // GET /api/company/members 검색 조건 (전부 선택)

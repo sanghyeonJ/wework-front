@@ -15,6 +15,7 @@ import { ROLE_LABELS, STATUS_LABELS } from "./labels";
 import { Pagination } from "../../shared/components/Pagination";
 import { Select } from "../../shared/components/Select";
 import { MemberCreateDialog } from "./MemberCreateDialog";
+import { LeaderBadge } from "./LeaderBadge";
 
 const PAGE_SIZE = 20;
 const STATUSES: MemberStatus[] = ["INVITED", "ACTIVE", "RESIGNED"];
@@ -221,7 +222,12 @@ export function MembersPage() {
                       key={member.id}
                       className="border-b border-line last:border-b-0 hover:bg-hover/50"
                     >
-                      <td className="px-4 py-2 font-medium">{member.name}</td>
+                      <td className="px-4 py-2">
+                        <span className="flex items-center gap-1.5">
+                          <span className="font-medium">{member.name}</span>
+                          {member.leader && <LeaderBadge />}
+                        </span>
+                      </td>
                       <td className="px-4 py-2 text-fg-muted">{member.email}</td>
                       <td className="px-4 py-2">{member.departmentName ?? "-"}</td>
                       <td className="px-4 py-2">{member.jobGradeName ?? "-"}</td>
