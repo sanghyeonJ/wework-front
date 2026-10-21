@@ -7,9 +7,11 @@ import { toMemberErrorMessage } from "./errorMessages";
 import { getErrorCode } from "../../shared/api/client";
 import { Dialog } from "../../shared/components/Dialog";
 import { Button } from "../../shared/components/Button";
-import { Pencil } from "lucide-react";
+import { Pencil, ShieldCheck } from "lucide-react";
 import { ROLE_LABELS, STATUS_LABELS } from "./labels";
 import { LeaderBadge } from "./LeaderBadge";
+import { useAuthStore } from "../auth/store";
+import { MemberRoleForm } from "./MemberRoleForm";
 
 interface MemberDetailDialogProps {
   member: MemberResponse;
@@ -19,7 +21,9 @@ interface MemberDetailDialogProps {
 
 export function MemberDetailDialog({ member: initialMember, onClose, onChanged }: MemberDetailDialogProps) {
   const [member, setMember] = useState(initialMember);
-  const [mode, setMode] = useState<"view" | "edit">("view");
+  const [mode, setMode] = useState<"view" | "edit" | "role">("view");
+  const myId = useAuthStore((state) => state.me?.id);
+  const isSelf = member.id === myId;
   const resigned = member.status === "RESIGNED";
 
   // 저장 후: 목록 새로고침 + 최신 정보로 상세 갱신
@@ -30,13 +34,30 @@ export function MemberDetailDialog({ member: initialMember, onClose, onChanged }
     } catch (error) {
       // 상세 갱신에 실패해도 목록은 새로고침됨 → 이전 정보로 표시
     }
-    setMode("view")
+    setMode("view");
+    if (isSelf) {
+      // 이름·부서·권한이 바뀌었을 수 있음 → 타이틀바·상태바·메뉴 갱신
+      // (권한이 사원이 되면 권한 가드가 홈으로 이동시킴)
+      void useAuthStore.getState().loadMe();
+    }
   }
 
   if (mode === "edit") {
     return (
       <MemberEditForm 
         member={member}
+        onCancel={() => setMode("view")}
+        onSaved={() => void handleSaved()}
+        onClose={onClose}
+      />
+    );
+  }
+
+  if (mode === "role") {
+    return (
+      <MemberRoleForm 
+        member={member}
+        isSelf={isSelf}
         onCancel={() => setMode("view")}
         onSaved={() => void handleSaved()}
         onClose={onClose}
@@ -52,6 +73,12 @@ export function MemberDetailDialog({ member: initialMember, onClose, onChanged }
       onClose={onClose}
       footer={
         <>
+          {!resigned && (
+            <Button onClick={() => setMode("role")} className="mr-auto">
+              <ShieldCheck aria-hidden="true" className="size-4" />
+              권한 변경
+            </Button>
+          )}
           <Button onClick={onClose}>닫기</Button>
           {!resigned && (
             <Button variant="primary" data-autofocus onClick={() => setMode("edit")}>
