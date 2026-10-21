@@ -33,7 +33,7 @@ export function DepartmentDetail({ department, parentName, reloadKey, onEdit, on
         <dt className="text-fg-muted">상위 부서</dt>
         <dd>{parentName ?? "없음 (최상위 부서)"}</dd>
 
-        <dt className="text-fg-muted">부서장</dt>
+        <dt className="text-fg-muted flex items-center">부서장</dt>
         <dd className="flex flex-wrap items-center gap-3">
           <span>
             {department.leaderName ?? <span className="text-fg-muted">지정되지 않음</span>}

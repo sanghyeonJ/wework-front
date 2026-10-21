@@ -39,7 +39,7 @@ export function Dialog({ open, title, onClose, size = "md", footer, children }: 
       ref={dialogRef}
       onClose={onClose}
       aria-labelledby={titleId}
-      className={`m-auto w-[calc(100%-2rem)] ${SIZE_CLASS[size]} overflow-hidden rounded-lg border border-line bg-panel p-0 text-fg shadow-xl backdrop:bg-black/40`}
+      className={`m-auto w-[calc(100%-2rem)] ${SIZE_CLASS[size]} overflow-hidden rounded-lg border border-line bg-panel p-0 text-fg shadow-xl outline-none backdrop:bg-black/40`}
     >
       {/* 열려 있을 때만 내용 생성 → 다시 열면 입력값이 초기화됨 */}
       {open && (
