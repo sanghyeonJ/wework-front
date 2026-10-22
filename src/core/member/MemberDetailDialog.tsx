@@ -7,11 +7,12 @@ import { toMemberErrorMessage } from "./errorMessages";
 import { getErrorCode } from "../../shared/api/client";
 import { Dialog } from "../../shared/components/Dialog";
 import { Button } from "../../shared/components/Button";
-import { Pencil, ShieldCheck } from "lucide-react";
+import { MailPlus, Pencil, ShieldCheck } from "lucide-react";
 import { ROLE_LABELS, STATUS_LABELS } from "./labels";
 import { LeaderBadge } from "./LeaderBadge";
 import { useAuthStore } from "../auth/store";
 import { MemberRoleForm } from "./MemberRoleForm";
+import { MemberReinviteForm } from "./MemberReinviteForm";
 
 interface MemberDetailDialogProps {
   member: MemberResponse;
@@ -21,7 +22,7 @@ interface MemberDetailDialogProps {
 
 export function MemberDetailDialog({ member: initialMember, onClose, onChanged }: MemberDetailDialogProps) {
   const [member, setMember] = useState(initialMember);
-  const [mode, setMode] = useState<"view" | "edit" | "role">("view");
+  const [mode, setMode] = useState<"view" | "edit" | "role" | "reinvite">("view");
   const myId = useAuthStore((state) => state.me?.id);
   const isSelf = member.id === myId;
   const resigned = member.status === "RESIGNED";
@@ -65,6 +66,12 @@ export function MemberDetailDialog({ member: initialMember, onClose, onChanged }
     );
   }
 
+  if (mode === "reinvite") {
+    return (
+      <MemberReinviteForm member={member} onBack={() => setMode("view")} onClose={onClose} />
+    );
+  }
+
   return (
     <Dialog
       open
@@ -73,12 +80,20 @@ export function MemberDetailDialog({ member: initialMember, onClose, onChanged }
       onClose={onClose}
       footer={
         <>
-          {!resigned && (
-            <Button onClick={() => setMode("role")} className="mr-auto">
-              <ShieldCheck aria-hidden="true" className="size-4" />
-              권한 변경
-            </Button>
-          )}
+          <div className="mr-auto flex flex-wrap gap-2">
+            {!resigned && (
+              <Button onClick={() => setMode("role")} className="mr-auto">
+                <ShieldCheck aria-hidden="true" className="size-4" />
+                권한 변경
+              </Button>
+            )}
+            {member.status === "INVITED" && (
+              <Button onClick={() => setMode("reinvite")}>
+                <MailPlus aria-hidden="true" className="size-4" />
+                초대 재발급
+              </Button>
+            )}
+          </div>
           <Button onClick={onClose}>닫기</Button>
           {!resigned && (
             <Button variant="primary" data-autofocus onClick={() => setMode("edit")}>
