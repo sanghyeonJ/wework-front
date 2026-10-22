@@ -1,5 +1,5 @@
 import { useId, useState, type SubmitEvent } from "react";
-import { collectSubtreeIds, type DepartmentNode, type FlatDepartment } from "./tree";
+import { collectSubtreeIds, indentLabel, type DepartmentNode, type FlatDepartment } from "./tree";
 import { createDepartment, updateDepartment } from "./api";
 import { getErrorCode } from "../../shared/api/client";
 import { toDepartmentErrorMessage } from "./errorMessages";
@@ -19,9 +19,6 @@ const TITLES: Record<DepartmentFormTarget["mode"], string> = {
   "create-child": "하위 부서 추가",
   edit: "부서 수정",
 };
-
-// 선택 상자에서 들여쓰기용 공백 (일반 공백은 합쳐져서 사라지므로 줄바꿈 없는 공백 사용)
-const INDENT = "\u00A0\u00A0\u00A0\u00A0";
 
 interface DepartmentFormDialogProps {
   target: DepartmentFormTarget;
@@ -131,7 +128,7 @@ export function DepartmentFormDialog({
           >
             {parentOptions.map(({ node, depth }) => (
               <option key={node.id} value={node.id}>
-                {`${INDENT.repeat(depth)}${node.name}`}
+                {indentLabel(node.name, depth)}
               </option>
             ))}
           </SelectField>

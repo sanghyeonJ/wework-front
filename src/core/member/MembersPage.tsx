@@ -7,7 +7,7 @@ import { getMembers } from "./api";
 import { toMemberErrorMessage } from "./errorMessages";
 import { getErrorCode } from "../../shared/api/client";
 import { getDepartments } from "../department/api";
-import { buildTree, flattenTree } from "../department/tree";
+import { buildTree, flattenTree, indentLabel } from "../department/tree";
 import { PageHeader } from "../../shared/components/PageHeader";
 import { Button } from "../../shared/components/Button";
 import { Search, UserPlus } from "lucide-react";
@@ -20,7 +20,6 @@ import { MemberDetailDialog } from "./MemberDetailDialog";
 
 const PAGE_SIZE = 20;
 const STATUSES: MemberStatus[] = ["INVITED", "ACTIVE", "RESIGNED"];
-const INDENT = "\u00A0\u00A0\u00A0\u00A0";
 
 const STATUS_STYLES: Record<MemberStatus, string> = {
   INVITED: "text-accent ring-accent/50",
@@ -171,7 +170,7 @@ export function MembersPage() {
           <option value="">부서: 전체</option>
           {departmentOptions.map(({ node, depth }) => (
             <option key={node.id} value={node.id}>
-              {`${INDENT.repeat(depth)}${node.name}`}
+              {indentLabel(node.name, depth)}
             </option>
           ))}
         </Select>
