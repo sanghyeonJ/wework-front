@@ -7,12 +7,13 @@ import { toMemberErrorMessage } from "./errorMessages";
 import { getErrorCode } from "../../shared/api/client";
 import { Dialog } from "../../shared/components/Dialog";
 import { Button } from "../../shared/components/Button";
-import { MailPlus, Pencil, ShieldCheck } from "lucide-react";
+import { MailPlus, Pencil, ShieldCheck, UserX } from "lucide-react";
 import { ROLE_LABELS, STATUS_LABELS } from "./labels";
 import { LeaderBadge } from "./LeaderBadge";
 import { useAuthStore } from "../auth/store";
 import { MemberRoleForm } from "./MemberRoleForm";
 import { MemberReinviteForm } from "./MemberReinviteForm";
+import { MemberResignForm } from "./MemberResignForm";
 
 interface MemberDetailDialogProps {
   member: MemberResponse;
@@ -22,7 +23,7 @@ interface MemberDetailDialogProps {
 
 export function MemberDetailDialog({ member: initialMember, onClose, onChanged }: MemberDetailDialogProps) {
   const [member, setMember] = useState(initialMember);
-  const [mode, setMode] = useState<"view" | "edit" | "role" | "reinvite">("view");
+  const [mode, setMode] = useState<"view" | "edit" | "role" | "reinvite" | "resign">("view");
   const myId = useAuthStore((state) => state.me?.id);
   const isSelf = member.id === myId;
   const resigned = member.status === "RESIGNED";
@@ -72,6 +73,17 @@ export function MemberDetailDialog({ member: initialMember, onClose, onChanged }
     );
   }
 
+  if (mode === "resign") {
+    return (
+      <MemberResignForm
+        member={member}
+        onBack={() => setMode("view")}
+        onClose={onClose}
+        onResigned={() => void handleSaved()}
+      />
+    );
+  }
+
   return (
     <Dialog
       open
@@ -91,6 +103,12 @@ export function MemberDetailDialog({ member: initialMember, onClose, onChanged }
               <Button onClick={() => setMode("reinvite")}>
                 <MailPlus aria-hidden="true" className="size-4" />
                 초대 재발급
+              </Button>
+            )}
+            {!resigned && !isSelf && (
+              <Button variant="danger" onClick={() => setMode("resign")}>
+                <UserX aria-hidden="true" className="size-4" />
+                퇴사 처리
               </Button>
             )}
           </div>
