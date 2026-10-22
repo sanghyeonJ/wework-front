@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useId, useState, type SubmitEvent } from "react";
 import type { MemberResponse } from "./types";
 import { resignMember } from "./api";
 import { toMemberErrorMessage } from "./errorMessages";
 import { getErrorCode } from "../../shared/api/client";
 import { Dialog } from "../../shared/components/Dialog";
 import { Button } from "../../shared/components/Button";
+import { todayString } from "../../shared/utils/format";
+import { TextField } from "../../shared/components/TextField";
 
 interface MemberResignFormProps{
   member: MemberResponse;
@@ -14,17 +16,29 @@ interface MemberResignFormProps{
 }
 
 export function MemberResignForm({ member, onBack, onClose, onResigned }: MemberResignFormProps) {
+  const formId = useId();
   const invited = member.status === "INVITED";
   const blocked = member.leader;
+  const today = todayString();
 
+  const [resignDate, setResignDate] = useState(today);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  async function handleResign() {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (submitting || blocked) return;
+
+    const beforeHire = member.hireDate !== null && resignDate < member.hireDate;
+    if (resignDate === "" || resignDate > today || beforeHire) {
+      setErrorMessage(toMemberErrorMessage("INVALID_RESIGN_DATE"));
+      return;
+    }
+
     setSubmitting(true);
     setErrorMessage(null);
     try {
-      await resignMember(member.id);
+      await resignMember(member.id, resignDate);
       onResigned();
     } catch (error) {
       setErrorMessage(toMemberErrorMessage(getErrorCode(error)));
@@ -44,8 +58,9 @@ export function MemberResignForm({ member, onBack, onClose, onResigned }: Member
             취소
           </Button>
           <Button
+            type="submit"
+            form={formId}
             variant="danger"
-            onClick={() => void handleResign()}
             disabled={blocked || submitting}
           >
             {submitting ? "처리 중..." : "퇴사 처리"}
@@ -53,10 +68,26 @@ export function MemberResignForm({ member, onBack, onClose, onResigned }: Member
         </>
       }
     >
-      <div className="flex flex-col gap-3">
+      <form id={formId} onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
         <p>
           <strong className="font-semibold">{member.name}</strong>({member.email})님을 퇴사 처리합니다.
         </p>
+
+        <TextField
+          id={`${formId}-resign-date`}
+          label="퇴사일"
+          type="date"
+          min={member.hireDate ?? undefined}
+          max={today}
+          hint={
+            member.hireDate
+              ? `입사일(${member.hireDate})부터 오늘까지 선택할 수 있습니다.`
+              : "오늘 또는 그 이전 날짜를 선택할 수 있습니다."
+          }
+          disabled={blocked}
+          value={resignDate}
+          onChange={(e) => setResignDate(e.target.value)}
+        />
 
         <ul className="list-disc space-y-1 pl-4 text-sm text-fg-muted">
           {invited ? (
@@ -84,7 +115,7 @@ export function MemberResignForm({ member, onBack, onClose, onResigned }: Member
             {errorMessage}
           </p>
         )}
-      </div>
+      </form>
     </Dialog>
   );
 }

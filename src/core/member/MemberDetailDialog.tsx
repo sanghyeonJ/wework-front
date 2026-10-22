@@ -146,6 +146,13 @@ export function MemberDetailDialog({ member: initialMember, onClose, onChanged }
 
         <dt className="text-fg-muted">입사일</dt>
         <dd className="tabular-nums">{member.hireDate ?? "-"}</dd>
+
+        {resigned && (
+          <>
+            <dt className="text-fg-muted">퇴사일</dt>
+            <dd className="tabular-nums">{member.resignDate ?? "-"}</dd>
+          </>
+        )}
       </dl>
 
       {resigned && (

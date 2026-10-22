@@ -15,6 +15,7 @@ export interface MemberResponse {
   jobTitleId: number | null;
   jobTitleName: string | null;
   hireDate: string | null;
+  resignDate: string | null;
   leader: boolean;
 }
 

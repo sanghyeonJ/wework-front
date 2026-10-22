@@ -35,8 +35,8 @@ export async function changeMemberRole(id: number, role: AssignableRole): Promis
   await api.patch(`${BASE}/${id}/role`, { role });
 }
 
-export async function resignMember(id: number): Promise<void> {
-  await api.post(`${BASE}/${id}/resign`);
+export async function resignMember(id: number, resignDate: string): Promise<void> {
+  await api.post(`${BASE}/${id}/resign`, {resignDate});
 }
 
 // 초대 재발급 (INVITED만) → 새 초대 링크

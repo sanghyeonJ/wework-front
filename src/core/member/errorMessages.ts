@@ -13,6 +13,7 @@ const MESSAGES: Record<string, string> = {
   DEPARTMENT_NOT_FOUND: "선택한 부서를 찾을 수 없습니다. 창을 닫고 다시 시도해 주세요.",
   JOB_GRADE_NOT_FOUND: "선택한 직급을 찾을 수 없습니다. 창을 닫고 다시 시도해 주세요.",
   JOB_TITLE_NOT_FOUND: "선택한 직책을 찾을 수 없습니다. 창을 닫고 다시 시도해 주세요.",
+  INVALID_RESIGN_DATE: "퇴사일은 입사일부터 오늘까지의 날짜만 지정할 수 있습니다.",
   INVALID_INPUT: "입력값을 확인해 주세요.",
   NETWORK_ERROR: "서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.",
 };
