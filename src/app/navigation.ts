@@ -1,15 +1,4 @@
-import type { MemberRole } from "../core/auth/types";
-
-export interface NavItem {
-  label: string;
-  path: string;
-}
-
-export interface NavSection {
-  title?: string;
-  roles: MemberRole[];
-  items: NavItem[];
-}
+import type { NavSection } from "../core/module/types";
 
 // 사이드바 메뉴
 export const NAV_SECTIONS: NavSection[] = [
