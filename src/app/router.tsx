@@ -9,6 +9,7 @@ import { PlaceholderPage } from "../shared/components/PlaceholderPage";
 import { PositionsPage } from "../core/position/PositionsPage";
 import { DepartmentsPage } from "../core/department/DepartmentsPage";
 import { MembersPage } from "../core/member/MembersPage";
+import { attendanceModule } from "../modules/attendance";
 
 export const router = createBrowserRouter([
 
@@ -43,6 +44,8 @@ export const router = createBrowserRouter([
               { path: "/admin/companies", element: <PlaceholderPage title="회사" /> },
             ]
           },
+          // 모듈 (모듈이 자기 라우트를 정의, app은 끼워 넣기만 함)
+          ...attendanceModule.routes,
           // 없는 주소
           { path: "*", element: <PlaceholderPage title="페이지를 찾을 수 없습니다" note="주소를 다시 확인해 주세요." /> },
         ]

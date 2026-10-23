@@ -1,4 +1,5 @@
 import type { NavSection } from "../core/module/types";
+import { attendanceModule } from "../modules/attendance";
 
 // 사이드바 메뉴
 export const NAV_SECTIONS: NavSection[] = [
@@ -15,6 +16,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: "사원", path: "/company/members" }
     ]
   },
+  ...attendanceModule.navSections,
   {
     title: "시스템 관리",
     roles: ["SUPER_ADMIN"],
