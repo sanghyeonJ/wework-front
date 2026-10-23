@@ -17,7 +17,7 @@ export interface MeResponse{
   name: string;
   role: MemberRole;
   companyId: number | null;
-  companyName: number | null;
+  companyName: string | null;
   departmentId: number | null;
   departmentName: string | null;
   jobGradeName: string | null;
