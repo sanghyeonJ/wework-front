@@ -3,6 +3,7 @@
 import { RequireRole } from "../../core/auth/RouteGuards";
 import type { ModuleDefinition } from "../../core/module/types";
 import { PlaceholderPage } from "../../shared/components/PlaceholderPage";
+import { MyAttendancePage } from "./MyAttendancePage";
 
 // 화면은 아직 임시 화면
 export const attendanceModule: ModuleDefinition = {
@@ -12,7 +13,7 @@ export const attendanceModule: ModuleDefinition = {
     {
       element: <RequireRole roles={["COMPANY_ADMIN", "EMPLOYEE"]} />,
       children: [
-        { path: "/attendance/me", element: <PlaceholderPage title="내 근태 기록" /> }
+        { path: "/attendance/me", element: <MyAttendancePage /> }
       ]
     },
 
