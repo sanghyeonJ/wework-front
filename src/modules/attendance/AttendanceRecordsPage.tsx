@@ -11,6 +11,10 @@ import { PageHeader } from "../../shared/components/PageHeader";
 import { TextField } from "../../shared/components/TextField";
 import { SelectField } from "../../shared/components/SelectField";
 import { Button } from "../../shared/components/Button";
+import type { PageResponse } from "../../shared/types/api";
+import { Pagination } from "../../shared/components/Pagination";
+
+const PAGE_SIZE = 20; // 한 페이지에 보여줄 사원 수 (백엔드 기본값과 같음)
 
 // 주소의 문자열을 정수로 (숫자가 아니면 null)
 function parseInteger(value: string | null): number | null {
@@ -32,7 +36,8 @@ export function AttendanceRecordsPage() {
 
   const [departments, setDepartments] = useState<FlatDepartment[] | null>(null);
   const [departmentError, setDepartmentError] = useState<string | null>(null);
-  const [records, setRecords] = useState<AttendanceRecord[] | null>(null);
+  const [result, setResult] = useState<PageResponse<AttendanceRecord> | null>(null);
+  const records = result?.content ?? null;  // 이번 페이지의 사원 목록 (아직 못 받았으면 null)
   const [recordsError, setRecordsError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
@@ -50,7 +55,11 @@ export function AttendanceRecordsPage() {
   // 하위 부서 포함은 기본 켬 (사원 목록 화면과 맞춤), 끌 때만 sub=false 저장
   const includeSub = searchParams.get("sub") !== "false";
 
-  function updateConditions(next: {date?: string; departmentId?: number | null; includeSub?: boolean}) {
+  // 페이지: 주소는 1부터, API는 0부터 (없거나 잘못된 값이면 첫 페이지)
+  const pageParam = parseInteger(searchParams.get("page"));
+  const page = pageParam !== null && pageParam >= 1 ? pageParam - 1 : 0;
+
+  function updateConditions(next: { date?: string; departmentId?: number | null; includeSub?: boolean; page?: number }) {
     const nextDate = next.date ?? date;
     const nextDepartmentId = next.departmentId === undefined ? departmentId : next.departmentId;
     const nextIncludeSub = next.includeSub ?? includeSub;
@@ -58,7 +67,9 @@ export function AttendanceRecordsPage() {
     const params: Record<string, string> = { date: nextDate };
     if (nextDepartmentId !== null) params.departmentId = String(nextDepartmentId);
     if (!nextIncludeSub) params.sub = "false";
-    setSearchParams(params, {replace: true});
+    // 페이지는 넘길 때만 저장 (조건을 바꾸면 page를 안 넘기므로 자동으로 첫 페이지)
+    if (next.page !== undefined && next.page > 0) params.page = String(next.page + 1);
+    setSearchParams(params, { replace: true });
   }
 
   // ----- 부서 목록 (선택 상자용) -----
@@ -91,14 +102,16 @@ export function AttendanceRecordsPage() {
     fetchRecords({
       date,
       departmentId: departmentId ?? undefined,
-      includeSubDepartments: departmentId !== null ? includeSub : undefined
+      includeSubDepartments: departmentId !== null ? includeSub : undefined,
+      page,
+      size: PAGE_SIZE
     })
       .then((data) => {
-        if (!ignore) setRecords(data);
+        if (!ignore) setResult(data);
       })
       .catch((error) => {
         if (ignore) return;
-        setRecords(null); // 다른 조건의 목록이 남아 보이지 않게 비움
+        setResult(null); // 다른 조건의 목록이 남아 보이지 않게 비움
         setRecordsError(toAttendanceErrorMessage(getErrorCode(error)));
       })
       .finally(() => {
@@ -108,15 +121,9 @@ export function AttendanceRecordsPage() {
     return (() => {
       ignore = true;
     });
-  }, [departmentsReady, date, departmentId, includeSub, reloadKey]);
+  }, [departmentsReady, date, departmentId, includeSub, page, reloadKey]);
 
   const errorMessage = departmentError ?? recordsError;
-
-  // ----- 요약 -----
-  const total = records?.length ?? 0;
-  const withRecord = records?.filter((record) => record.attendance !== null).length ?? 0;
-  const lateCount = records?.filter((record) => record.attendance?.late).length ?? 0;
-  const earlyLeaveCount = records?.filter((record) => record.attendance?.earlyLeave).length ?? 0;
 
   return (
     <div className="p-6">
@@ -175,9 +182,6 @@ export function AttendanceRecordsPage() {
           <p className="text-fg-muted">불러오는 중…</p>
         ) : (
           <div className={loading ? "opacity-60" : undefined}>
-            <p className="mb-3 text-sm text-fg-muted">
-              대상 {total}명 · 출근 기록 {withRecord}명 · 기록 없음 {total - withRecord}명 · 지각 {lateCount}명 · 조퇴 {earlyLeaveCount}명
-            </p>
             {records.length === 0 ? (
               <p className="text-fg-muted">이 날 재직 중이던 사원이 없습니다.</p>
             ) : (
@@ -216,6 +220,18 @@ export function AttendanceRecordsPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+
+            {result && (
+              <div className="mt-3">
+                <Pagination 
+                  page={result.page.number}
+                  totalPages={result.page.totalPages}
+                  totalElements={result.page.totalElements}
+                  unit="명"
+                  onChange={(next) => updateConditions({ page: next })}
+                />
               </div>
             )}
           </div>

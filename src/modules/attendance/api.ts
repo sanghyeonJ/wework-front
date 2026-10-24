@@ -1,4 +1,5 @@
 import { api } from "../../shared/api/client";
+import type { PageResponse } from "../../shared/types/api";
 import type { Attendance, AttendanceRecord, EffectiveWorkSchedule, TodayAttendance, WorkSchedule, WorkScheduleRequest } from "./types";
 
 const BASE = "/api/attendance";
@@ -35,11 +36,13 @@ export interface FetchRecordsParams {
   date: string;
   departmentId?: number;
   includeSubDepartments?: boolean;
+  page?: number; // 0부터 (백엔드 기준), 없으면 첫 페이지
+  size?: number; // 없으면 백엔드 기본값(20)
 }
 
-// 그날 재직 중이던 사원 전체 + 기록 (기록이 없으면 attendance: null)
-export async function fetchRecords(params: FetchRecordsParams):Promise<AttendanceRecord[]> {
-  const res = await api.get<AttendanceRecord[]>(`${BASE}/manage/records`, { params });
+// 그날 재직 중이던 사원 한 페이지 + 기록 (기록이 없으면 attendance: null)
+export async function fetchRecords(params: FetchRecordsParams):Promise<PageResponse<AttendanceRecord>> {
+  const res = await api.get<PageResponse<AttendanceRecord>>(`${BASE}/manage/records`, { params });
   return res.data;
 }
 
