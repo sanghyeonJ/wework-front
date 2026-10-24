@@ -10,6 +10,7 @@ import { PositionsPage } from "../core/position/PositionsPage";
 import { DepartmentsPage } from "../core/department/DepartmentsPage";
 import { MembersPage } from "../core/member/MembersPage";
 import { attendanceModule } from "../modules/attendance";
+import { HomePage } from "./HomePage";
 
 export const router = createBrowserRouter([
 
@@ -27,7 +28,7 @@ export const router = createBrowserRouter([
       {
         element: <AppLayout />,
         children: [
-          { path: "/", element: <PlaceholderPage title="홈" note="근태 현황" /> },
+          { path: "/", element: <HomePage /> },
           // 기업관리자 (백엔드 /api/company/**)
           {
             element: <RequireRole roles={["COMPANY_ADMIN"]} />,  // 여러 권한 혀용을 대비한 배열로
