@@ -6,6 +6,9 @@ import { NAV_SECTIONS } from "./navigation";
 import { ChevronDown } from "lucide-react";
 
 import { ROLE_LABELS } from "../core/member/labels";
+import { useAttendanceStore } from "../modules/attendance/store";
+import { useEffect } from "react";
+import { formatTime } from "../shared/utils/format";
 
 // 로그인 후 모든 화면의 공통 틀
 export function AppLayout() {
@@ -121,7 +124,32 @@ function Sidebar({ role }: { role: MemberRole }) {
 
 // ===== 상태바 =====
 function StatusBar({ me }: { me: MeResponse }) {
-  const items = [me.companyName ?? "시스템 관리", ROLE_LABELS[me.role], me.departmentName];
+  const today = useAttendanceStore((state) => state.today);
+  const loadToday = useAttendanceStore((state) => state.loadToday);
+
+  // 최고관리자는 근태 API를 쓸 수 없음 (백엔드 403) → 호출하지 않음
+  const usesAttendance = me.role !== "SUPER_ADMIN";
+
+  // 어느 화면에서 새로고침해도 상태바가 출근 여부를 알 수 있게 불러옴
+  useEffect(() => {
+    if (usesAttendance) void loadToday();
+  }, [usesAttendance, loadToday]);
+
+  // 오늘 상태를 아직 못 받았으면 표시하지 않음 (깜빡임 방지)
+  const attendanceLabel = !usesAttendance || today === null
+    ? null
+    : today.attendance === null
+      ? "출근 전"
+      : today.attendance.checkOutAt === null
+        ? `출근 ${formatTime(today.attendance.checkInAt)}`
+        : `퇴근 ${formatTime(today.attendance.checkOutAt)}`;
+
+  const items = [
+    me.companyName ?? "시스템 관리", 
+    ROLE_LABELS[me.role], 
+    me.departmentName,
+    attendanceLabel
+  ];
 
   return (
     <footer className="flex h-7 shrink-0 select-none items-center border-t border-line bg-chrome px-3 text-xs text-fg-muted">
