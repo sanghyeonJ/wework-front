@@ -1,0 +1,226 @@
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router";
+import { buildTree, flattenTree, indentLabel, type FlatDepartment } from "../../core/department/tree";
+import type { AttendanceRecord } from "./types";
+import { formatTime, todayString } from "../../shared/utils/format";
+import { getDepartments } from "../../core/department/api";
+import { toAttendanceErrorMessage } from "./errorMessages";
+import { getErrorCode } from "../../shared/api/client";
+import { fetchRecords } from "./api";
+import { PageHeader } from "../../shared/components/PageHeader";
+import { TextField } from "../../shared/components/TextField";
+import { SelectField } from "../../shared/components/SelectField";
+import { Button } from "../../shared/components/Button";
+
+// 주소의 문자열을 정수로 (숫자가 아니면 null)
+function parseInteger(value: string | null): number | null {
+  if (value === null || !/^\d+$/.test(value)) return null;
+  return Number(value);
+}
+
+// "YYYY-MM-DD" 형식이고 실제로 있는 날짜인지 (2026-02-31 같은 값 거르기)
+function isValidDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+}
+
+// 관리자 근태 조회 (날짜별)
+export function AttendanceRecordsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [departments, setDepartments] = useState<FlatDepartment[] | null>(null);
+  const [departmentError, setDepartmentError] = useState<string | null>(null);
+  const [records, setRecords] = useState<AttendanceRecord[] | null>(null);
+  const [recordsError, setRecordsError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  // ----- 조건 (주소에 저장, 잘못된 값이면 기본값) -----
+  const dateParam = searchParams.get("date");
+  const date = dateParam !== null && isValidDate(dateParam) ? dateParam : todayString();
+
+  // 목록에 없는 부서 id(삭제된 부서, 직접 고친 주소)는 "전체"로 취급
+  const rawDepartmentId = parseInteger(searchParams.get("departmentId"));
+  const departmentId = rawDepartmentId !== null && departments?.some((item) => item.node.id === rawDepartmentId)
+    ? rawDepartmentId
+    : null;
+  
+  // 하위 부서 포함은 기본 켬 (사원 목록 화면과 맞춤), 끌 때만 sub=false 저장
+  const includeSub = searchParams.get("sub") !== "false";
+
+  function updateConditions(next: {date?: string; departmentId?: number | null; includeSub?: boolean}) {
+    const nextDate = next.date ?? date;
+    const nextDepartmentId = next.departmentId === undefined ? departmentId : next.departmentId;
+    const nextIncludeSub = next.includeSub ?? includeSub;
+
+    const params: Record<string, string> = { date: nextDate };
+    if (nextDepartmentId !== null) params.departmentId = String(nextDepartmentId);
+    if (!nextIncludeSub) params.sub = "false";
+    setSearchParams(params, {replace: true});
+  }
+
+  // ----- 부서 목록 (선택 상자용) -----
+  useEffect(() => {
+    let ignore = false;
+    setDepartmentError(null);
+
+    getDepartments()
+      .then((data) => {
+        if (!ignore) setDepartments(flattenTree(buildTree(data)));
+      })
+      .catch((error) => {
+        if (!ignore) setDepartmentError(toAttendanceErrorMessage(getErrorCode(error)));
+      });
+
+    return () => {
+      ignore = true;
+    }
+  }, [reloadKey]);
+
+  // ----- 근태 기록 (부서 목록을 받은 뒤에 조회: 주소의 부서 id가 유효한지 먼저 확인하기 위해) -----
+  const departmentsReady = departments !== null;
+  useEffect(() => {
+    if (!departmentsReady) return;
+
+    let ignore = false;
+    setLoading(true);
+    setRecordsError(null);
+
+    fetchRecords({
+      date,
+      departmentId: departmentId ?? undefined,
+      includeSubDepartments: departmentId !== null ? includeSub : undefined
+    })
+      .then((data) => {
+        if (!ignore) setRecords(data);
+      })
+      .catch((error) => {
+        if (ignore) return;
+        setRecords(null); // 다른 조건의 목록이 남아 보이지 않게 비움
+        setRecordsError(toAttendanceErrorMessage(getErrorCode(error)));
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
+
+    return (() => {
+      ignore = true;
+    });
+  }, [departmentsReady, date, departmentId, includeSub, reloadKey]);
+
+  const errorMessage = departmentError ?? recordsError;
+
+  // ----- 요약 -----
+  const total = records?.length ?? 0;
+  const withRecord = records?.filter((record) => record.attendance !== null).length ?? 0;
+  const lateCount = records?.filter((record) => record.attendance?.late).length ?? 0;
+  const earlyLeaveCount = records?.filter((record) => record.attendance?.earlyLeave).length ?? 0;
+
+  return (
+    <div className="p-6">
+      <PageHeader 
+        title="근태 조회"
+        description="날짜별로 재직 중이던 사원의 출근·퇴근 기록을 확인합니다. 휴가·휴일 여부는 반영되지 않습니다."
+      />
+
+      <div className="mt-5 flex flex-wrap items-end gap-3">
+        <TextField 
+          id="records-date"
+          label="날짜"
+          type="date"
+          className="w-44"
+          value={date}
+          onChange={(e) => {
+            if (e.target.value !== "") updateConditions({ date: e.target.value });
+          }}
+        />
+        <SelectField
+          id="records-department"
+          label="부서"
+          className="w-56"
+          value={departmentId === null ? "" : String(departmentId)}
+          onChange={(e) => updateConditions({ departmentId: e.target.value === "" ? null : Number(e.target.value) })}
+          disabled={departments === null}
+        >
+          <option value="">전체 부서</option>
+          {departments?.map(({ node, depth }) => (
+            <option key={node.id} value={node.id}>
+              {indentLabel(node.name, depth)}
+            </option>
+          ))}
+        </SelectField>
+        <label className="flex h-9.5 items-center gap-2">
+          <input 
+            type="checkbox"
+            className="size-4 accent-accent"
+            checked={includeSub}
+            disabled={departmentId === null}
+            onChange={(e) => updateConditions({ includeSub: e.target.checked })}
+          />
+          <span className={departmentId === null ? "text-fg-muted" : undefined}>하위 부서 포함</span>
+        </label>
+      </div>
+
+      <div className="mt-5">
+        {errorMessage ? (
+          <div className="flex flex-col items-start gap-3">
+            <p role="alert" className="text-danger">
+              {errorMessage}
+            </p>
+            <Button onClick={() => setReloadKey((key) => key + 1)}>다시 불러오기</Button>
+          </div>
+        ) : records === null ? (
+          <p className="text-fg-muted">불러오는 중…</p>
+        ) : (
+          <div className={loading ? "opacity-60" : undefined}>
+            <p className="mb-3 text-sm text-fg-muted">
+              대상 {total}명 · 출근 기록 {withRecord}명 · 기록 없음 {total - withRecord}명 · 지각 {lateCount}명 · 조퇴 {earlyLeaveCount}명
+            </p>
+            {records.length === 0 ? (
+              <p className="text-fg-muted">이 날 재직 중이던 사원이 없습니다.</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-xl text-left">
+                  <thead className="border-b border-line text-sm text-fg-muted">
+                    <tr>
+                      <th className="py-2 pr-4 font-medium">사원</th>
+                      <th className="py-2 pr-4 font-medium">부서</th>
+                      <th className="py-2 pr-4 font-medium">출근</th>
+                      <th className="py-2 pr-4 font-medium">퇴근</th>
+                      <th className="py-2 font-medium">상태</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {records.map(({ memberId, memberName,  departmentName, attendance }) => (
+                      <tr key={memberId} className="border-b border-line">
+                        <td className="py-2.5 pr-4">{memberName}</td>
+                        <td className="py-2.5 pr-4 text-fg-muted">{departmentName ?? "-"}</td>
+                        <td className="py-2.5 pr-4">{attendance ? formatTime(attendance.checkInAt) : "-"}</td>
+                        <td className="py-2.5 pr-4">{attendance?.checkOutAt ? formatTime(attendance.checkOutAt) : "-"}</td>
+                        <td className="py-2.5">
+                          {attendance === null ? (
+                            <span className="text-fg-muted">기록 없음</span>
+                          ) : attendance.late || attendance.earlyLeave ? (
+                            <span className="text-danger">
+                              {[attendance.late && "지각", attendance.earlyLeave && "조퇴"]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </span>
+                          ) : (
+                            <span className="text-fg-muted">정상</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
