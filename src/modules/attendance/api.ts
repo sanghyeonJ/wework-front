@@ -1,6 +1,6 @@
 import { api } from "../../shared/api/client";
 import type { PageResponse } from "../../shared/types/api";
-import type { Attendance, AttendanceRecord, EffectiveWorkSchedule, TodayAttendance, WorkSchedule, WorkScheduleRequest } from "./types";
+import type { Attendance, AttendanceRecord, EffectiveWorkSchedule, TodayAttendance, WorkSchedule, WorkScheduleBulkRequest, WorkScheduleRequest } from "./types";
 
 const BASE = "/api/attendance";
 
@@ -64,6 +64,13 @@ export async function saveMemberSchedule(
   body: WorkScheduleRequest
 ): Promise<WorkSchedule> {
   const res = await api.put<WorkSchedule>(`${BASE}/manage/schedules/members/${memberId}`, body);
+  return res.data;
+}
+
+// 여러 사원 개인 설정 일괄 저장 (전부 적용되거나 전부 취소, 요청한 순서대로 돌려줌)
+// 한 명이라도 내 회사 사원이 아니면 404, 퇴사자가 있으면 409
+export async function saveMemberSchedules(body: WorkScheduleBulkRequest): Promise<WorkSchedule[]> {
+  const res = await api.put<WorkSchedule[]>(`${BASE}/manage/schedules/members`, body);
   return res.data;
 }
 

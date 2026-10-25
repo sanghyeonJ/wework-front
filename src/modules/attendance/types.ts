@@ -46,6 +46,11 @@ export interface WorkScheduleRequest {
   graceMinutes: number;
 }
 
+// 여러 사원에게 같은 개인 근무시간을 한 번에 저장 (백엔드 WorkScheduleBulkRequest)
+export interface WorkScheduleBulkRequest extends WorkScheduleRequest {
+  memberIds: number[];
+}
+
 // 적용 근무시간 (EffectiveWorkSchedule) /EffectiveWorkSchedule
 export interface EffectiveWorkSchedule {
   source: WorkScheduleSource;  // 어느 설정이 적용됐는지
