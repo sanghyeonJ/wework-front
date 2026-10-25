@@ -2,9 +2,9 @@
 
 import { RequireRole } from "../../core/auth/RouteGuards";
 import type { ModuleDefinition } from "../../core/module/types";
-import { PlaceholderPage } from "../../shared/components/PlaceholderPage";
 import { AttendanceRecordsPage } from "./AttendanceRecordsPage";
 import { MyAttendancePage } from "./MyAttendancePage";
+import { WorkSchedulesPage } from "./WorkSchedulesPage";
 
 // 화면은 아직 임시 화면
 export const attendanceModule: ModuleDefinition = {
@@ -23,7 +23,7 @@ export const attendanceModule: ModuleDefinition = {
       element: <RequireRole roles={["COMPANY_ADMIN"]} />,
       children: [
         { path: "/attendance/manage/records", element: <AttendanceRecordsPage /> },
-        { path: "/attendance/manage/schedules", element: <PlaceholderPage title="근무시간 설정" /> }
+        { path: "/attendance/manage/schedules", element: <WorkSchedulesPage /> }
       ]
     }
   ],
