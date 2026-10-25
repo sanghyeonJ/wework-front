@@ -1,11 +1,12 @@
 import { X } from "lucide-react";
 import { useEffect, useId, useRef, type ReactNode } from "react";
 
-type DialogSize = "md" | "lg";
+type DialogSize = "md" | "lg" | "xl";
 
 const SIZE_CLASS: Record<DialogSize, string> = {
   md: "max-w-md", // 448px: 확인창, 짧은 폼
   lg: "max-w-xl", // 576px: 입력칸이 많은 폼
+  xl: "max-w-4xl", // 896px: 표가 들어가는 대화상자 
 };
 
 interface DialogProps {
