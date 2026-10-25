@@ -1,21 +1,26 @@
 import { useEffect, useState } from "react";
 import type { WorkSchedule } from "./types";
-import { fetchSchedules } from "./api";
+import { fetchSchedules, saveCompanySchedule } from "./api";
 import { toAttendanceErrorMessage } from "./errorMessages";
 import { getErrorCode } from "../../shared/api/client";
 import { PageHeader } from "../../shared/components/PageHeader";
 import { Button } from "../../shared/components/Button";
+import { WorkScheduleFormDialog, type WorkScheduleFormValues } from "./WorkScheduleFormDialog";
 
 // 서버의 "09:00:00" → 화면의 "09:00"
 function toClock(time: string): string {
   return time.slice(0, 5);
 }
 
+// 회사 설정이 없을 때 폼의 처음 값 (백엔드 기본값과 같음)
+const DEFAULT_FORM: WorkScheduleFormValues = { startTime: "09:00", endTime: "18:00", graceMinutes: "0" };
+
 // 근무시간 설정 (관리자)
 export function WorkSchedulesPage() {
   const [schedules, setSchedules] = useState<WorkSchedule[] | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [companyFormOpen, setCompanyFormOpen] = useState(false);
 
   useEffect(() => {
     let ignore = false;
@@ -34,13 +39,18 @@ export function WorkSchedulesPage() {
     }
   }, [reloadKey]);
 
-  const hasCompanySchedule = schedules?.some((schedule) => schedule.scopeType === "COMPANY") ?? false;
+  const companySchedule = schedules?.find((schedule) => schedule.scopeType === "COMPANY") ?? null;
 
   return (
     <div className="p-6">
       <PageHeader 
         title="근무시간 설정"
         description="회사 전체 근무시간과 사원별 근무시간을 관리합니다. 사원별 설정이 회사 설정보다 우선합니다."
+        actions={
+          <Button variant="primary" disabled={schedules === null} onClick={() => setCompanyFormOpen(true)}>
+            {companySchedule ? "회사 설정 수정" : "회사 설정 추가"}
+          </Button>
+        }
       />
 
       <div className="mt-5">
@@ -55,7 +65,7 @@ export function WorkSchedulesPage() {
           <p className="text-fg-muted">불러오는 중…</p>
         ) : (
           <>
-            {!hasCompanySchedule && (
+            {!companySchedule && (
               <p className="mb-3 text-sm text-fg-muted">
                 회사 설정이 없어 기본값(09:00~18:00, 지각 유예 0분)이 적용됩니다.
               </p>
@@ -95,6 +105,24 @@ export function WorkSchedulesPage() {
           </>
         )}
       </div>
+
+      {companyFormOpen && (
+        <WorkScheduleFormDialog 
+          title="회사 일괄 근무시간"
+          initial={
+            companySchedule
+              ? {
+                startTime: toClock(companySchedule.startTime),
+                endTime: toClock(companySchedule.endTime),
+                graceMinutes: String(companySchedule.graceMinutes)
+              }
+              : DEFAULT_FORM
+          }
+          save={saveCompanySchedule}
+          onClose={() => setCompanyFormOpen(false)}
+          onSaved={() => setReloadKey((key) => key + 1)}
+        />
+      )}
     </div>
   );
 }
