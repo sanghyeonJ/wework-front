@@ -1,5 +1,7 @@
 // 근태 모듈 타입 (백엔드 dto와 같은 모양)
 
+import type { Holiday } from "../../core/holiday/types";
+
 // 근태 기록 한 줄 (AttendanceResponse) /dto/AttendanceResponse
 export interface Attendance {
   id: number;
@@ -57,4 +59,11 @@ export interface EffectiveWorkSchedule {
   startTime: string;
   endTime: string;
   graceMinutes: number;
+}
+
+// 근태 조회 날짜 정보 (GET /api/attendance/manage/day-info)
+export interface AttendanceDayInfo {
+  date: string;
+  weekend: boolean;
+  holidays: Holiday[];
 }

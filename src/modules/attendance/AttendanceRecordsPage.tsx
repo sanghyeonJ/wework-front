@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { buildTree, flattenTree, indentLabel, type FlatDepartment } from "../../core/department/tree";
-import type { AttendanceRecord } from "./types";
+import type { AttendanceDayInfo, AttendanceRecord } from "./types";
 import { formatTime, todayString } from "../../shared/utils/format";
 import { getDepartments } from "../../core/department/api";
 import { toAttendanceErrorMessage } from "./errorMessages";
 import { getErrorCode } from "../../shared/api/client";
-import { fetchRecords } from "./api";
+import { fetchDayInfo, fetchRecords } from "./api";
 import { PageHeader } from "../../shared/components/PageHeader";
 import { TextField } from "../../shared/components/TextField";
 import { SelectField } from "../../shared/components/SelectField";
@@ -41,6 +41,7 @@ export function AttendanceRecordsPage() {
   const [recordsError, setRecordsError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
+  const [dayInfo, setDayInfo] = useState<AttendanceDayInfo | null>(null);
 
   // ----- 조건 (주소에 저장, 잘못된 값이면 기본값) -----
   const dateParam = searchParams.get("date");
@@ -123,6 +124,29 @@ export function AttendanceRecordsPage() {
     });
   }, [departmentsReady, date, departmentId, includeSub, page, reloadKey]);
 
+  // ----- 날짜 정보 (주말·휴일 표시용, 실패해도 기록 목록은 그대로 보여줌) -----
+  useEffect(() => {
+    let ignore = false;
+
+    fetchDayInfo(date)
+      .then((data) => {
+        if (!ignore) setDayInfo(data);
+      })
+      .catch(() => {
+        if (!ignore) setDayInfo(null);
+      });
+
+    return () => {
+      ignore = true
+    }
+  }, [date, reloadKey]);
+
+  // 지금 고른 날짜의 정보만 사용 (다른 날짜의 응답이 남아 있어도 보이지 않게)
+  const currentDayInfo = dayInfo?.date === date ? dayInfo : null;
+  const dayOffLabels = currentDayInfo
+    ? [currentDayInfo.weekend && "주말", ...currentDayInfo.holidays.map((holiday) => holiday.name)].filter(Boolean)
+    : [];
+
   const errorMessage = departmentError ?? recordsError;
 
   return (
@@ -169,6 +193,10 @@ export function AttendanceRecordsPage() {
           <span className={departmentId === null ? "text-fg-muted" : undefined}>하위 부서 포함</span>
         </label>
       </div>
+
+      {dayOffLabels.length > 0 && (
+        <p className="mt-3 text-fg-muted">쉬는 날: {dayOffLabels.join(" · ")}</p>
+      )}
 
       <div className="mt-5">
         {errorMessage ? (

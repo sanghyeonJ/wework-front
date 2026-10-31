@@ -1,6 +1,6 @@
 import { api } from "../../shared/api/client";
 import type { PageResponse } from "../../shared/types/api";
-import type { Attendance, AttendanceRecord, EffectiveWorkSchedule, TodayAttendance, WorkSchedule, WorkScheduleBulkRequest, WorkScheduleRequest } from "./types";
+import type { Attendance, AttendanceDayInfo, AttendanceRecord, EffectiveWorkSchedule, TodayAttendance, WorkSchedule, WorkScheduleBulkRequest, WorkScheduleRequest } from "./types";
 
 const BASE = "/api/attendance";
 
@@ -82,5 +82,11 @@ export async function deleteMemberSchedule(memberId: number): Promise<void> {
 // 사원에게 실제로 적용되는 근무시간 (개인 > 회사 > 기본값)
 export async function fetchEffectiveSchedule(memberId: number): Promise<EffectiveWorkSchedule> {
   const res = await api.get<EffectiveWorkSchedule>(`${BASE}/manage/schedules/effective`, { params: { memberId } });
+  return res.data;
+}
+
+// 날짜 정보: 주말 여부 + 그날의 휴일 목록 (휴일이 없으면 holidays는 빈 배열)
+export async function fetchDayInfo(date: string): Promise<AttendanceDayInfo> {
+  const res = await api.get<AttendanceDayInfo>(`${BASE}/manage/day-info`, { params: { date } });
   return res.data;
 }
