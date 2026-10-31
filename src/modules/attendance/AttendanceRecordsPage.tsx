@@ -143,9 +143,6 @@ export function AttendanceRecordsPage() {
 
   // 지금 고른 날짜의 정보만 사용 (다른 날짜의 응답이 남아 있어도 보이지 않게)
   const currentDayInfo = dayInfo?.date === date ? dayInfo : null;
-  const dayOffLabels = currentDayInfo
-    ? [currentDayInfo.weekend && "주말", ...currentDayInfo.holidays.map((holiday) => holiday.name)].filter(Boolean)
-    : [];
 
   const errorMessage = departmentError ?? recordsError;
 
@@ -153,7 +150,7 @@ export function AttendanceRecordsPage() {
     <div className="p-6">
       <PageHeader 
         title="근태 조회"
-        description="날짜별로 재직 중이던 사원의 출근·퇴근 기록을 확인합니다. 휴가·휴일 여부는 반영되지 않습니다."
+        description="날짜별로 재직 중이던 사원의 출근·퇴근 기록을 확인합니다. 휴가 여부는 반영되지 않습니다."
       />
 
       <div className="mt-5 flex flex-wrap items-end gap-3">
@@ -194,8 +191,18 @@ export function AttendanceRecordsPage() {
         </label>
       </div>
 
-      {dayOffLabels.length > 0 && (
-        <p className="mt-3 text-fg-muted">쉬는 날: {dayOffLabels.join(" · ")}</p>
+      {currentDayInfo && (currentDayInfo.weekend || currentDayInfo.holidays.length > 0) && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {currentDayInfo.weekend && (
+            <span className="rounded border border-line px-2 py-0.5 text-xs text-fg-muted">주말</span>
+          )}
+          {currentDayInfo.holidays.map((holiday) => (
+            <span key={`${holiday.type}-${holiday.name}`} className={holiday.type == "PUBLIC" ? "rounded bg-accent px-2 py-0.5 text-xs text-on-accent" : "rounded bg-hover px-2 py-0.5 text-xs"}>
+              {holiday.type === "COMPANY" && "회사 · "}
+              {holiday.name}
+            </span>
+          ))}
+        </div>
       )}
 
       <div className="mt-5">
