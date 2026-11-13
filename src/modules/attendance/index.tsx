@@ -1,6 +1,6 @@
 // 근태 모듈 (백엔드 모듈 코드 ATTENDANCE)
 
-import { RequireRole } from "../../core/auth/RouteGuards";
+import { RequireRole } from "../../core/auth/components/RouteGuards";
 import type { ModuleDefinition } from "../../core/module/types";
 import { AttendanceRecordsPage } from "./pages/AttendanceRecordsPage";
 import { MyAttendancePage } from "./pages/MyAttendancePage";

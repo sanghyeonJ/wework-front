@@ -1,8 +1,8 @@
 import { createBrowserRouter } from "react-router";
 
-import { LoginPage } from "../core/auth/LoginPage";
-import { GuestOnly, RequireAuth, RequireRole } from "../core/auth/RouteGuards";
-import { InvitePage } from "../core/auth/InvitePage";
+import { LoginPage } from "../core/auth/pages/LoginPage";
+import { GuestOnly, RequireAuth, RequireRole } from "../core/auth/components/RouteGuards";
+import { InvitePage } from "../core/auth/pages/InvitePage";
 import { AppLayout } from "./AppLayout";
 
 import { PlaceholderPage } from "../shared/components/PlaceholderPage";

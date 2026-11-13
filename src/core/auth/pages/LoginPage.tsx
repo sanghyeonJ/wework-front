@@ -1,9 +1,9 @@
 import { useState, type SubmitEvent } from "react";
-import { getErrorCode } from "../../shared/api/client";
-import { useAuthStore } from "./store";
-import { AuthWindow } from "./AuthWindow";
-import { TextField } from "../../shared/components/TextField";
-import { Button } from "../../shared/components/Button";
+import { getErrorCode } from "../../../shared/api/client";
+import { useAuthStore } from "../store";
+import { AuthWindow } from "../components/AuthWindow";
+import { TextField } from "../../../shared/components/TextField";
+import { Button } from "../../../shared/components/Button";
 
 
 // 에러 코드 → 화면 문구 (다국어 모듈 때 번역 파일로 이동)

@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router";
-import { LoadingScreen } from "../../shared/components/LoadingScreen";
-import { useAuthStore } from "./store";
-import type { MemberRole } from "./types";
+import { LoadingScreen } from "../../../shared/components/LoadingScreen";
+import { useAuthStore } from "../store";
+import type { MemberRole } from "../types";
 
 // 로그인한 사람만 통과, 아니면 로그인 화면으로
 export function RequireAuth() {

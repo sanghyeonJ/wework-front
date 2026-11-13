@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ThemeSwitcher } from "../../shared/components/ThemeSwitcher";
+import { ThemeSwitcher } from "../../../shared/components/ThemeSwitcher";
 
 interface AuthWindowProps {
   footer?: ReactNode;

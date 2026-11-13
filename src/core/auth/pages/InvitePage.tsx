@@ -1,13 +1,13 @@
 import { useNavigate, useSearchParams } from "react-router";
-import type { InvitationResponse } from "./types";
+import type { InvitationResponse } from "../types";
 import { useEffect, useState, type SubmitEvent } from "react";
-import { acceptInvitation, getInvitation } from "./api";
-import { getErrorCode } from "../../shared/api/client";
-import { AuthWindow } from "./AuthWindow";
-import { isValidPassword, PASSWORD_HINT } from "./passwordRule";
-import { TextField } from "../../shared/components/TextField";
-import { Button } from "../../shared/components/Button";
-import { formatDateTime } from "../../shared/utils/format";
+import { acceptInvitation, getInvitation } from "../api";
+import { getErrorCode } from "../../../shared/api/client";
+import { AuthWindow } from "../components/AuthWindow";
+import { isValidPassword, PASSWORD_HINT } from "../passwordRule";
+import { TextField } from "../../../shared/components/TextField";
+import { Button } from "../../../shared/components/Button";
+import { formatDateTime } from "../../../shared/utils/format";
 
 // 링크 자체를 쓸 수 없는 경우의 문구
 const LINK_ERROR_MESSAGES: Record<string, string> = {
