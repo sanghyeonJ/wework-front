@@ -1,6 +1,7 @@
 // 근태 모듈 타입 (백엔드 dto와 같은 모양)
 
 import type { Holiday } from "../../core/holiday/types";
+import type { LeaveType } from "../../core/leave/types";
 
 // 근태 기록 한 줄 (AttendanceResponse) /dto/AttendanceResponse
 export interface Attendance {
@@ -24,6 +25,7 @@ export interface AttendanceRecord {
   memberName: string;
   departmentName: string | null;
   attendance: Attendance | null;
+  leaveTypes: LeaveType[];
 }
 
 // 근무시간 설정

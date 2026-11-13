@@ -1,0 +1,1 @@
+export type LeaveType = "ANNUAL" | "HALF_AM" | "HALF_PM" | "SICK";
