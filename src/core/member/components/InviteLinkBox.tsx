@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Button } from "../../shared/components/Button";
+import { Button } from "../../../shared/components/Button";
 import { Check, Copy } from "lucide-react";
-import { formatDateTime } from "../../shared/utils/format";
+import { formatDateTime } from "../../../shared/utils/format";
 
 interface InviteLinkBoxProps {
   inviteUrl: string;

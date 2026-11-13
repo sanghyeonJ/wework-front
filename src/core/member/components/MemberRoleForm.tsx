@@ -1,11 +1,11 @@
 import { useId, useState, type SubmitEvent } from "react";
-import type { AssignableRole, MemberResponse } from "./types";
-import { changeMemberRole } from "./api";
-import { toMemberErrorMessage } from "./errorMessages";
-import { getErrorCode } from "../../shared/api/client";
-import { Dialog } from "../../shared/components/Dialog";
-import { Button } from "../../shared/components/Button";
-import { ROLE_LABELS } from "./labels";
+import type { AssignableRole, MemberResponse } from "../types";
+import { changeMemberRole } from "../api";
+import { toMemberErrorMessage } from "../errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
+import { Dialog } from "../../../shared/components/Dialog";
+import { Button } from "../../../shared/components/Button";
+import { ROLE_LABELS } from "../labels";
 
 const ROLE_OPTIONS: AssignableRole[] = ["COMPANY_ADMIN", "EMPLOYEE"];
 

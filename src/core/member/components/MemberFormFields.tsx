@@ -1,7 +1,7 @@
-import { SelectField } from "../../shared/components/SelectField";
-import { TextField } from "../../shared/components/TextField";
-import { indentLabel } from "../department/tree";
-import type { MemberFormOptions } from "./useMemberFormOptions";
+import { SelectField } from "../../../shared/components/SelectField";
+import { TextField } from "../../../shared/components/TextField";
+import { indentLabel } from "../../department/tree";
+import type { MemberFormOptions } from "../useMemberFormOptions";
 
 // 입력칸 값은 모두 문자열 (선택 상자·날짜 입력이 문자열을 다룸), 보낼 때 변환
 export interface MemberFormValues {

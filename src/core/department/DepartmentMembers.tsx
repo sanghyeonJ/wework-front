@@ -5,7 +5,7 @@ import { toMemberErrorMessage } from "../member/errorMessages";
 import { getErrorCode } from "../../shared/api/client";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
-import { LeaderBadge } from "../member/LeaderBadge";
+import { LeaderBadge } from "../member/components/LeaderBadge";
 
 interface DepartmentMembersProps {
   departmentId: number;

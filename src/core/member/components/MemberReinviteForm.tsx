@@ -1,10 +1,10 @@
 import { useState } from "react";
-import type { MemberInviteResponse, MemberResponse } from "./types";
-import { reissueInvitation } from "./api";
-import { toMemberErrorMessage } from "./errorMessages";
-import { getErrorCode } from "../../shared/api/client";
-import { Dialog } from "../../shared/components/Dialog";
-import { Button } from "../../shared/components/Button";
+import type { MemberInviteResponse, MemberResponse } from "../types";
+import { reissueInvitation } from "../api";
+import { toMemberErrorMessage } from "../errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
+import { Dialog } from "../../../shared/components/Dialog";
+import { Button } from "../../../shared/components/Button";
 import { InviteLinkBox } from "./InviteLinkBox";
 
 interface MemberReinviteFormProps {

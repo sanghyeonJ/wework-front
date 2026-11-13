@@ -1,12 +1,12 @@
 import { useId, useState, type SubmitEvent } from "react";
-import type { MemberResponse } from "./types";
-import { resignMember } from "./api";
-import { toMemberErrorMessage } from "./errorMessages";
-import { getErrorCode } from "../../shared/api/client";
-import { Dialog } from "../../shared/components/Dialog";
-import { Button } from "../../shared/components/Button";
-import { todayString } from "../../shared/utils/format";
-import { TextField } from "../../shared/components/TextField";
+import type { MemberResponse } from "../types";
+import { resignMember } from "../api";
+import { toMemberErrorMessage } from "../errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
+import { Dialog } from "../../../shared/components/Dialog";
+import { Button } from "../../../shared/components/Button";
+import { todayString } from "../../../shared/utils/format";
+import { TextField } from "../../../shared/components/TextField";
 
 interface MemberResignFormProps{
   member: MemberResponse;

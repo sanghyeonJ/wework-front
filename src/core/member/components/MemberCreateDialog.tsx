@@ -1,14 +1,14 @@
 import { useId, useState, type SubmitEvent } from "react";
-import { useMemberFormOptions } from "./useMemberFormOptions";
+import { useMemberFormOptions } from "../useMemberFormOptions";
 import { EMPTY_MEMBER_FORM, MemberFormFields, toNullableId, type MemberFormValues } from "./MemberFormFields";
-import type { MemberInviteResponse } from "./types";
-import { createMember } from "./api";
-import { toMemberErrorMessage } from "./errorMessages";
-import { getErrorCode } from "../../shared/api/client";
-import { Dialog } from "../../shared/components/Dialog";
-import { Button } from "../../shared/components/Button";
+import type { MemberInviteResponse } from "../types";
+import { createMember } from "../api";
+import { toMemberErrorMessage } from "../errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
+import { Dialog } from "../../../shared/components/Dialog";
+import { Button } from "../../../shared/components/Button";
 import { InviteLinkBox } from "./InviteLinkBox";
-import { TextField } from "../../shared/components/TextField";
+import { TextField } from "../../../shared/components/TextField";
 
 // 간단한 이메일 형식 검사 (최종 검사는 백엔드 @Email)
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
