@@ -1,5 +1,5 @@
 import { useAuthStore } from "../core/auth/store";
-import { CheckInCard } from "../modules/attendance/CheckInCard";
+import { CheckInCard } from "../modules/attendance/components/CheckInCard";
 import { PlaceholderPage } from "../shared/components/PlaceholderPage";
 
 // 홈 화면: 권한에 따라 보여줄 내용을 나눔

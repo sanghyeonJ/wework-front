@@ -1,13 +1,13 @@
 import { useSearchParams } from "react-router";
-import { formatTime, todayString } from "../../shared/utils/format";
+import { formatTime, todayString } from "../../../shared/utils/format";
 import { useEffect, useState } from "react";
-import type { Attendance } from "./types";
-import { fetchMyAttendances } from "./api";
-import { toAttendanceErrorMessage } from "./errorMessages";
-import { getErrorCode } from "../../shared/api/client";
-import { PageHeader } from "../../shared/components/PageHeader";
-import { SelectField } from "../../shared/components/SelectField";
-import { Button } from "../../shared/components/Button";
+import type { Attendance } from "../types";
+import { fetchMyAttendances } from "../api";
+import { toAttendanceErrorMessage } from "../errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
+import { PageHeader } from "../../../shared/components/PageHeader";
+import { SelectField } from "../../../shared/components/SelectField";
+import { Button } from "../../../shared/components/Button";
 
 const YEAR_COUNT = 5; // 올해 포함 최근 5년
 

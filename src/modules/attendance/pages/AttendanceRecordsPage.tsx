@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import { buildTree, flattenTree, indentLabel, type FlatDepartment } from "../../core/department/tree";
-import type { AttendanceDayInfo, AttendanceRecord } from "./types";
-import { formatTime, todayString } from "../../shared/utils/format";
-import { getDepartments } from "../../core/department/api";
-import { toAttendanceErrorMessage } from "./errorMessages";
-import { getErrorCode } from "../../shared/api/client";
-import { fetchDayInfo, fetchRecords } from "./api";
-import { PageHeader } from "../../shared/components/PageHeader";
-import { TextField } from "../../shared/components/TextField";
-import { SelectField } from "../../shared/components/SelectField";
-import { Button } from "../../shared/components/Button";
-import type { PageResponse } from "../../shared/types/api";
-import { Pagination } from "../../shared/components/Pagination";
+import { buildTree, flattenTree, indentLabel, type FlatDepartment } from "../../../core/department/tree";
+import type { AttendanceDayInfo, AttendanceRecord } from "../types";
+import { formatTime, todayString } from "../../../shared/utils/format";
+import { getDepartments } from "../../../core/department/api";
+import { toAttendanceErrorMessage } from "../errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
+import { fetchDayInfo, fetchRecords } from "../api";
+import { PageHeader } from "../../../shared/components/PageHeader";
+import { TextField } from "../../../shared/components/TextField";
+import { SelectField } from "../../../shared/components/SelectField";
+import { Button } from "../../../shared/components/Button";
+import type { PageResponse } from "../../../shared/types/api";
+import { Pagination } from "../../../shared/components/Pagination";
 
 const PAGE_SIZE = 20; // 한 페이지에 보여줄 사원 수 (백엔드 기본값과 같음)
 

@@ -1,10 +1,10 @@
 import { useState, type SubmitEvent } from "react";
-import type { WorkScheduleRequest } from "./types";
-import { toAttendanceErrorMessage } from "./errorMessages";
-import { getErrorCode } from "../../shared/api/client";
-import { Dialog } from "../../shared/components/Dialog";
-import { Button } from "../../shared/components/Button";
-import { TextField } from "../../shared/components/TextField";
+import type { WorkScheduleRequest } from "../types";
+import { toAttendanceErrorMessage } from "../errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
+import { Dialog } from "../../../shared/components/Dialog";
+import { Button } from "../../../shared/components/Button";
+import { TextField } from "../../../shared/components/TextField";
 
 // 폼 값은 문자열로 관리하고 보낼 때 변환
 export interface WorkScheduleFormValues {

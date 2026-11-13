@@ -2,9 +2,9 @@
 
 import { RequireRole } from "../../core/auth/RouteGuards";
 import type { ModuleDefinition } from "../../core/module/types";
-import { AttendanceRecordsPage } from "./AttendanceRecordsPage";
-import { MyAttendancePage } from "./MyAttendancePage";
-import { WorkSchedulesPage } from "./WorkSchedulesPage";
+import { AttendanceRecordsPage } from "./pages/AttendanceRecordsPage";
+import { MyAttendancePage } from "./pages/MyAttendancePage";
+import { WorkSchedulesPage } from "./pages/WorkSchedulesPage";
 
 // 화면은 아직 임시 화면
 export const attendanceModule: ModuleDefinition = {

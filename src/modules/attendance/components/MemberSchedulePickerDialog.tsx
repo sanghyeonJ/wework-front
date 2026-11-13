@@ -1,16 +1,16 @@
 import { useEffect, useState, type SubmitEvent } from "react";
-import { Dialog } from "../../shared/components/Dialog";
-import { Button } from "../../shared/components/Button";
-import { getMembers } from "../../core/member/api";
-import type { PageResponse } from "../../shared/types/api";
-import type { MemberResponse } from "../../core/member/types";
-import { toMemberErrorMessage } from "../../core/member/errorMessages";
-import { getErrorCode } from "../../shared/api/client";
+import { Dialog } from "../../../shared/components/Dialog";
+import { Button } from "../../../shared/components/Button";
+import { getMembers } from "../../../core/member/api";
+import type { PageResponse } from "../../../shared/types/api";
+import type { MemberResponse } from "../../../core/member/types";
+import { toMemberErrorMessage } from "../../../core/member/errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
 import { Search, X } from "lucide-react";
-import { IconButton } from "../../shared/components/IconButton";
-import { Pagination } from "../../shared/components/Pagination";
+import { IconButton } from "../../../shared/components/IconButton";
+import { Pagination } from "../../../shared/components/Pagination";
 import { WorkScheduleFormDialog, type WorkScheduleFormValues } from "./WorkScheduleFormDialog";
-import { saveMemberSchedules } from "./api";
+import { saveMemberSchedules } from "../api";
 
 const MAX_SELECTED = 100;
 const PAGE_SIZE = 10;

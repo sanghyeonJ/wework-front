@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useAttendanceStore } from "./store";
-import { toAttendanceErrorMessage } from "./errorMessages";
-import { getErrorCode } from "../../shared/api/client";
-import { Button } from "../../shared/components/Button";
-import { formatTime } from "../../shared/utils/format";
+import { useAttendanceStore } from "../store";
+import { toAttendanceErrorMessage } from "../errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
+import { Button } from "../../../shared/components/Button";
+import { formatTime } from "../../../shared/utils/format";
 
 // 홈 화면 출퇴근 카드
 export function CheckInCard() {

@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import type { WorkSchedule } from "./types";
-import { deleteMemberSchedule, fetchSchedules, saveCompanySchedule, saveMemberSchedule } from "./api";
-import { toAttendanceErrorMessage } from "./errorMessages";
-import { getErrorCode } from "../../shared/api/client";
-import { PageHeader } from "../../shared/components/PageHeader";
-import { Button } from "../../shared/components/Button";
-import { WorkScheduleFormDialog, type WorkScheduleFormValues } from "./WorkScheduleFormDialog";
-import { MemberSchedulePickerDialog } from "./MemberSchedulePickerDialog";
-import { ConfirmDialog } from "../../shared/components/ConfirmDialog";
+import type { WorkSchedule } from "../types";
+import { deleteMemberSchedule, fetchSchedules, saveCompanySchedule, saveMemberSchedule } from "../api";
+import { toAttendanceErrorMessage } from "../errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
+import { PageHeader } from "../../../shared/components/PageHeader";
+import { Button } from "../../../shared/components/Button";
+import { WorkScheduleFormDialog, type WorkScheduleFormValues } from "../components/WorkScheduleFormDialog";
+import { MemberSchedulePickerDialog } from "../components/MemberSchedulePickerDialog";
+import { ConfirmDialog } from "../../../shared/components/ConfirmDialog";
 
 // 서버의 "09:00:00" → 화면의 "09:00"
 function toClock(time: string): string {
