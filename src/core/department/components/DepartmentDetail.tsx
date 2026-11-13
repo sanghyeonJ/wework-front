@@ -1,6 +1,6 @@
 import { useId } from "react";
-import type { DepartmentNode } from "./tree";
-import { Button } from "../../shared/components/Button";
+import type { DepartmentNode } from "../tree";
+import { Button } from "../../../shared/components/Button";
 import { Pencil, Plus, Trash2, UserCog } from "lucide-react";
 import { DepartmentMembers } from "./DepartmentMembers";
 

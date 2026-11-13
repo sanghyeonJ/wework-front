@@ -1,13 +1,13 @@
 import { useEffect, useId, useState, type SubmitEvent } from "react";
-import type { DepartmentNode } from "./tree";
-import type { MemberResponse } from "../member/types";
-import { getMembers } from "../member/api";
-import { toDepartmentErrorMessage } from "./errorMessages";
-import { getErrorCode } from "../../shared/api/client";
-import { changeDepartmentLeader } from "./api";
-import { Dialog } from "../../shared/components/Dialog";
-import { Button } from "../../shared/components/Button";
-import { SelectField } from "../../shared/components/SelectField";
+import type { DepartmentNode } from "../tree";
+import type { MemberResponse } from "../../member/types";
+import { getMembers } from "../../member/api";
+import { toDepartmentErrorMessage } from "../errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
+import { changeDepartmentLeader } from "../api";
+import { Dialog } from "../../../shared/components/Dialog";
+import { Button } from "../../../shared/components/Button";
+import { SelectField } from "../../../shared/components/SelectField";
 
 interface DepartmentLeaderDialogProps {
   department: DepartmentNode;

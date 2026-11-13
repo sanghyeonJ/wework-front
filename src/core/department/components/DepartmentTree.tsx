@@ -1,5 +1,5 @@
 import { Building2, Folder } from "lucide-react";
-import type { FlatDepartment } from "./tree";
+import type { FlatDepartment } from "../tree";
 
 interface DepartmentTreeProps {
   items: FlatDepartment[];

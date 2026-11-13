@@ -1,12 +1,12 @@
 import { useId, useState, type SubmitEvent } from "react";
-import { collectSubtreeIds, indentLabel, type DepartmentNode, type FlatDepartment } from "./tree";
-import { createDepartment, updateDepartment } from "./api";
-import { getErrorCode } from "../../shared/api/client";
-import { toDepartmentErrorMessage } from "./errorMessages";
-import { Dialog } from "../../shared/components/Dialog";
-import { Button } from "../../shared/components/Button";
-import { TextField } from "../../shared/components/TextField";
-import { SelectField } from "../../shared/components/SelectField";
+import { collectSubtreeIds, indentLabel, type DepartmentNode, type FlatDepartment } from "../tree";
+import { createDepartment, updateDepartment } from "../api";
+import { getErrorCode } from "../../../shared/api/client";
+import { toDepartmentErrorMessage } from "../errorMessages";
+import { Dialog } from "../../../shared/components/Dialog";
+import { Button } from "../../../shared/components/Button";
+import { TextField } from "../../../shared/components/TextField";
+import { SelectField } from "../../../shared/components/SelectField";
 
 // 대화상자를 여는 세 가지 상황
 export type DepartmentFormTarget =

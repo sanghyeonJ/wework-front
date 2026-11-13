@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import type { MemberResponse } from "../member/types";
-import { getMembers } from "../member/api";
-import { toMemberErrorMessage } from "../member/errorMessages";
-import { getErrorCode } from "../../shared/api/client";
+import type { MemberResponse } from "../../member/types";
+import { getMembers } from "../../member/api";
+import { toMemberErrorMessage } from "../../member/errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
 import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
-import { LeaderBadge } from "../member/components/LeaderBadge";
+import { LeaderBadge } from "../../member/components/LeaderBadge";
 
 interface DepartmentMembersProps {
   departmentId: number;

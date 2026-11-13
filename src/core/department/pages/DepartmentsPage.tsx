@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import type { DepartmentResponse } from "./types";
-import { deleteDepartment, getDepartments } from "./api";
-import { toDepartmentErrorMessage } from "./errorMessages";
-import { getErrorCode } from "../../shared/api/client";
-import { buildTree, flattenTree, type DepartmentNode } from "./tree";
-import { PageHeader } from "../../shared/components/PageHeader";
-import { Button } from "../../shared/components/Button";
-import { DepartmentTree } from "./DepartmentTree";
-import { DepartmentDetail } from "./DepartmentDetail";
-import { DepartmentFormDialog, type DepartmentFormTarget } from "./DepartmentFormDialog";
+import type { DepartmentResponse } from "../types";
+import { deleteDepartment, getDepartments } from "../api";
+import { toDepartmentErrorMessage } from "../errorMessages";
+import { getErrorCode } from "../../../shared/api/client";
+import { buildTree, flattenTree, type DepartmentNode } from "../tree";
+import { PageHeader } from "../../../shared/components/PageHeader";
+import { Button } from "../../../shared/components/Button";
+import { DepartmentTree } from "../components/DepartmentTree";
+import { DepartmentDetail } from "../components/DepartmentDetail";
+import { DepartmentFormDialog, type DepartmentFormTarget } from "../components/DepartmentFormDialog";
 import { Plus } from "lucide-react";
-import { DepartmentLeaderDialog } from "./DepartmentLeaderDialog";
-import { ConfirmDialog } from "../../shared/components/ConfirmDialog";
+import { DepartmentLeaderDialog } from "../components/DepartmentLeaderDialog";
+import { ConfirmDialog } from "../../../shared/components/ConfirmDialog";
 
 // 대화상자 key: 대상이 바뀌면 새로 생성되도록
 function formKey(target: DepartmentFormTarget): string {

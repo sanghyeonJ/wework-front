@@ -7,7 +7,7 @@ import { AppLayout } from "./AppLayout";
 
 import { PlaceholderPage } from "../shared/components/PlaceholderPage";
 import { PositionsPage } from "../core/position/PositionsPage";
-import { DepartmentsPage } from "../core/department/DepartmentsPage";
+import { DepartmentsPage } from "../core/department/pages/DepartmentsPage";
 import { MembersPage } from "../core/member/pages/MembersPage";
 import { attendanceModule } from "../modules/attendance";
 import { HomePage } from "./HomePage";
