@@ -145,6 +145,7 @@ export function AttendanceRecordsPage() {
   // 지금 고른 날짜의 정보만 사용 (다른 날짜의 응답이 남아 있어도 보이지 않게)
   const currentDayInfo = dayInfo?.date === date ? dayInfo : null;
 
+  const isRestDay = currentDayInfo?.weekend || currentDayInfo?.holidays.length != 0;
   const errorMessage = departmentError ?? recordsError;
 
   return (
@@ -253,6 +254,10 @@ export function AttendanceRecordsPage() {
                               </span>
                             ) : (
                               <span className="text-fg-muted">정상</span>
+                            )}
+
+                            {isRestDay && attendance != null && (
+                              <span className="rounded border border-line px-2 py-0.5 text-xs text-fg-muted">휴일 근무</span>
                             )}
 
                             {leaveTypes.map((type) => (
