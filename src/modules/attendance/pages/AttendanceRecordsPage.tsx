@@ -13,6 +13,7 @@ import { SelectField } from "../../../shared/components/SelectField";
 import { Button } from "../../../shared/components/Button";
 import type { PageResponse } from "../../../shared/types/api";
 import { Pagination } from "../../../shared/components/Pagination";
+import { LEAVE_TYPE_LABELS } from "../../../core/leave/labels";
 
 const PAGE_SIZE = 20; // 한 페이지에 보여줄 사원 수 (백엔드 기본값과 같음)
 
@@ -150,7 +151,7 @@ export function AttendanceRecordsPage() {
     <div className="p-6">
       <PageHeader 
         title="근태 조회"
-        description="날짜별로 재직 중이던 사원의 출근·퇴근 기록을 확인합니다. 휴가 여부는 반영되지 않습니다."
+        description="날짜별로 재직 중이던 사원의 출근·퇴근 기록과 승인된 휴가를 확인합니다."
       />
 
       <div className="mt-5 flex flex-wrap items-end gap-3">
@@ -232,24 +233,34 @@ export function AttendanceRecordsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {records.map(({ memberId, memberName,  departmentName, attendance }) => (
+                    {records.map(({ memberId, memberName,  departmentName, attendance, leaveTypes }) => (
                       <tr key={memberId} className="border-b border-line">
                         <td className="py-2.5 pr-4">{memberName}</td>
                         <td className="py-2.5 pr-4 text-fg-muted">{departmentName ?? "-"}</td>
                         <td className="py-2.5 pr-4">{attendance ? formatTime(attendance.checkInAt) : "-"}</td>
                         <td className="py-2.5 pr-4">{attendance?.checkOutAt ? formatTime(attendance.checkOutAt) : "-"}</td>
                         <td className="py-2.5">
-                          {attendance === null ? (
-                            <span className="text-fg-muted">기록 없음</span>
-                          ) : attendance.late || attendance.earlyLeave ? (
-                            <span className="text-danger">
-                              {[attendance.late && "지각", attendance.earlyLeave && "조퇴"]
-                                .filter(Boolean)
-                                .join(" · ")}
-                            </span>
-                          ) : (
-                            <span className="text-fg-muted">정상</span>
-                          )}
+                          <div className="flex flex-wrap items-center gap-2">
+                            {attendance === null ? (
+                              leaveTypes.length === 0 ? (
+                                <span className="text-fg-muted">기록 없음</span>
+                              ) : null
+                            ) : attendance.late || attendance.earlyLeave ? (
+                              <span className="text-danger">
+                                {[attendance.late && "지각", attendance.earlyLeave && "조퇴"]
+                                  .filter(Boolean)
+                                  .join(" · ")}
+                              </span>
+                            ) : (
+                              <span className="text-fg-muted">정상</span>
+                            )}
+
+                            {leaveTypes.map((type) => (
+                              <span key={type} className="rounded bg-hover px-2 py-0.5 text-xs">
+                                {LEAVE_TYPE_LABELS[type]}
+                              </span>
+                            ))}
+                          </div>
                         </td>
                       </tr>
                     ))}
