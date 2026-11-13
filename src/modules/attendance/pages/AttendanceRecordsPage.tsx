@@ -145,7 +145,7 @@ export function AttendanceRecordsPage() {
   // 지금 고른 날짜의 정보만 사용 (다른 날짜의 응답이 남아 있어도 보이지 않게)
   const currentDayInfo = dayInfo?.date === date ? dayInfo : null;
 
-  const isRestDay = currentDayInfo?.weekend || currentDayInfo?.holidays.length != 0;
+  const isRestDay = currentDayInfo != null && (currentDayInfo?.weekend || currentDayInfo?.holidays.length > 0);
   const errorMessage = departmentError ?? recordsError;
 
   return (
