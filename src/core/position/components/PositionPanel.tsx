@@ -1,13 +1,13 @@
 import { useEffect, useId, useState, type SubmitEvent } from "react";
-import { createPosition, deletePosition, getPositions, updatePosition, type PositionKind } from "./api";
-import type { PositionResponse } from "./types";
-import { getErrorCode } from "../../shared/api/client";
-import { Button } from "../../shared/components/Button";
+import { createPosition, deletePosition, getPositions, updatePosition, type PositionKind } from "../api";
+import type { PositionResponse } from "../types";
+import { getErrorCode } from "../../../shared/api/client";
+import { Button } from "../../../shared/components/Button";
 import { Pencil, Plus, Trash2 } from "lucide-react";
-import { IconButton } from "../../shared/components/IconButton";
-import { Dialog } from "../../shared/components/Dialog";
-import { TextField } from "../../shared/components/TextField";
-import { ConfirmDialog } from "../../shared/components/ConfirmDialog";
+import { IconButton } from "../../../shared/components/IconButton";
+import { Dialog } from "../../../shared/components/Dialog";
+import { TextField } from "../../../shared/components/TextField";
+import { ConfirmDialog } from "../../../shared/components/ConfirmDialog";
 
 const LABELS: Record<PositionKind, string> = {
   "job-grades": "직급",

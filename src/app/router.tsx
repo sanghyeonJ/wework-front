@@ -6,7 +6,7 @@ import { InvitePage } from "../core/auth/InvitePage";
 import { AppLayout } from "./AppLayout";
 
 import { PlaceholderPage } from "../shared/components/PlaceholderPage";
-import { PositionsPage } from "../core/position/PositionsPage";
+import { PositionsPage } from "../core/position/pages/PositionsPage";
 import { DepartmentsPage } from "../core/department/pages/DepartmentsPage";
 import { MembersPage } from "../core/member/pages/MembersPage";
 import { attendanceModule } from "../modules/attendance";

@@ -1,5 +1,5 @@
-import { PageHeader } from "../../shared/components/PageHeader";
-import { PositionPanel } from "./PositionPanel";
+import { PageHeader } from "../../../shared/components/PageHeader";
+import { PositionPanel } from "../components/PositionPanel";
 
 export function PositionsPage() {
   return (
