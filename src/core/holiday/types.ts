@@ -6,3 +6,10 @@ export interface Holiday {
   name: string;
   type: HolidayType;
 }
+
+export interface CompanyHoliday {
+  id: number;
+  holidayDate: string;
+  name: string;
+  recurring: boolean;
+}
