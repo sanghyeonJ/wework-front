@@ -5,16 +5,30 @@ import { getCompanyHolidays } from "../api";
 import { toHolidayErrorMessage } from "../errorMessages";
 import { getErrorCode } from "../../../shared/api/client";
 import { todayString } from "../../../shared/utils/format";
+import { useSearchParams } from "react-router";
+
+
+// 백엔드의 2015와 같은 값
+const MIN_HOLIDAY_YEAR = 2015;
 
 export function HolidaysPage() {
-  const year = Number(todayString().slice(0, 4));
+  const currentYear = Number(todayString().slice(0, 4));
+  const maxYear = currentYear + 2;
 
   // 목록
   const [items, setItems] = useState<CompanyHoliday[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  // 처음 열릴 때, reloadKey가 바뀔 때
+  // 연도 목록
+  const yearCount = maxYear - MIN_HOLIDAY_YEAR + 1;
+  const yearOptions = Array.from({length: yearCount}, (_, index) => MIN_HOLIDAY_YEAR + index);
+
+  const [searchParams] = useSearchParams();
+  const paramYear = Number(searchParams.get("year"));
+  const year = yearOptions.includes(paramYear) ? paramYear : currentYear;
+
+  // 처음 열릴 때, 연도가 바뀔 때
   useEffect(() => {
     let ignore = false;
     getCompanyHolidays(year)
