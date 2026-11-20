@@ -7,10 +7,16 @@ import { getErrorCode } from "../../../shared/api/client";
 import { todayString } from "../../../shared/utils/format";
 import { useSearchParams } from "react-router";
 import { SelectField } from "../../../shared/components/SelectField";
+import { HolidayFormDialog } from "../components/HolidayFormDialog";
+import { Button } from "../../../shared/components/Button";
+import { Plus } from "lucide-react";
 
 
 // 백엔드의 2015와 같은 값
 const MIN_HOLIDAY_YEAR = 2015;
+
+// 대화상자 상태
+type FormTarget = { mode: "create" } | { mode: "edit"; item: CompanyHoliday };
 
 export function HolidaysPage() {
   const currentYear = Number(todayString().slice(0, 4));
@@ -28,6 +34,9 @@ export function HolidaysPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const paramYear = Number(searchParams.get("year"));
   const year = yearOptions.includes(paramYear) ? paramYear : currentYear;
+
+  // 대화상자
+  const [formTarget, setFormTarget] = useState<FormTarget | null>(null);
 
   // 처음 열릴 때, 연도가 바뀔 때
   useEffect(() => {
@@ -57,16 +66,22 @@ export function HolidaysPage() {
         description="회사 휴일을 등록·관리합니다. 근태 조회와 휴가 일수 계산에 반영됩니다."
       />
 
-      <SelectField
-        id = "paramYear"
-        label = "연도"
-        value={year}
-        onChange={(e) => setSearchParams({year: e.target.value}, {replace: true})}
-      >
-        {yearOptions.map((node) => (
-          <option key={node} value={node}>{node}년</option>
-        ))}
-      </SelectField>
+      <div className="flex justify-between items-end">
+        <SelectField
+          id = "paramYear"
+          label = "연도"
+          value={year}
+          onChange={(e) => setSearchParams({year: e.target.value}, {replace: true})}
+        >
+          {yearOptions.map((node) => (
+            <option key={node} value={node}>{node}년</option>
+          ))}
+        </SelectField>
+
+        <Button onClick={() => setFormTarget({mode: "create"})}>
+          <Plus className="size-4" aria-hidden="true" /> 추가
+        </Button>
+      </div>
 
 
       {loading && <p role="status" className="text-sm text-fg-muted">불러오는 중입니다.</p>}
@@ -102,6 +117,12 @@ export function HolidaysPage() {
           )}
         </div>
       )}
+
+      {formTarget && 
+        <HolidayFormDialog 
+          onClose={() => setFormTarget(null)}
+        />
+      }
     </div>
   );
 }
