@@ -9,7 +9,8 @@ import { useSearchParams } from "react-router";
 import { SelectField } from "../../../shared/components/SelectField";
 import { HolidayFormDialog } from "../components/HolidayFormDialog";
 import { Button } from "../../../shared/components/Button";
-import { Plus } from "lucide-react";
+import { Pencil, Plus } from "lucide-react";
+import { IconButton } from "../../../shared/components/IconButton";
 
 
 // 백엔드의 2015와 같은 값
@@ -98,15 +99,17 @@ export function HolidaysPage() {
           ) : (
             <table className="w-full whitespace-nowrap text-left">
               <colgroup>
-                <col style={{width: '35%'}} />
-                <col style={{width: '35%'}} />
-                <col/>
+                <col style={{width: '22%'}} />
+                <col />
+                <col style={{width: '18%'}} />
+                <col style={{width: '100px'}} />
               </colgroup>
               <thead className="sticky top-0 bg-chrome text-sm text-fg-muted">
                 <tr className="border-b border-line">
                   <th scope="col" className="px-4 py-2 font-normal">날짜</th>
                   <th scope="col" className="px-4 py-2 font-normal">이름</th>
                   <th scope="col" className="px-4 py-2 font-normal">반복</th>
+                  <th scope="col" className="px-4 py-2 font-normal text-center">관리</th>
                 </tr>
               </thead>
               <tbody>
@@ -115,6 +118,16 @@ export function HolidaysPage() {
                     <td className="px-4 py-2">{item.recurring ? item.holidayDate.slice(5) : item.holidayDate}</td>
                     <td className="px-4 py-2">{item.name}</td>
                     <td className="px-4 py-2">{item.recurring && "매년 반복"}</td>
+                    <td className="px-4 py-2">
+                      <div className="flex justify-center gap-1">
+                        <IconButton
+                          label={`${item.name} 수정`}
+                          onClick={() => setFormTarget({mode: "edit", item})}
+                        >
+                          <Pencil aria-hidden="true" className="size-4" />
+                        </IconButton>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -130,6 +143,7 @@ export function HolidaysPage() {
             setFormTarget(null);
             reload();
           }}
+          editing={formTarget.mode === "edit" ? formTarget.item : undefined}
         />
       }
     </div>
