@@ -13,3 +13,9 @@ export interface CompanyHoliday {
   name: string;
   recurring: boolean;
 }
+
+export interface CompanyHolidayRequest {
+  holidayDate: string;
+  name: string;
+  recurring: boolean;
+}
