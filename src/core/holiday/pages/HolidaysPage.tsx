@@ -92,7 +92,7 @@ export function HolidaysPage() {
               <tbody>
                 {items.map((item) => (
                   <tr key={item.id} className="border-b border-line last:border-b-0 hover:bg-hover/50">
-                    <td className="px-4 py-2">{item.holidayDate}</td>
+                    <td className="px-4 py-2">{item.recurring ? item.holidayDate.slice(5) : item.holidayDate}</td>
                     <td className="px-4 py-2">{item.name}</td>
                     <td className="px-4 py-2">{item.recurring && "매년 반복"}</td>
                   </tr>
