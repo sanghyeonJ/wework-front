@@ -180,6 +180,7 @@ export function HolidaysPage() {
             reload();
           }}
           editing={formTarget.mode === "edit" ? formTarget.item : undefined}
+          onNotFound={() => reload()}
         />
       }
 

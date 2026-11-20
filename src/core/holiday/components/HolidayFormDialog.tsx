@@ -11,9 +11,10 @@ interface HolidayFormDialogProps {
   onClose: () => void;
   onSaved: () => void;
   editing?: CompanyHoliday;
+  onNotFound: () => void;
 }
 
-export function HolidayFormDialog({onClose, onSaved, editing}: HolidayFormDialogProps) {
+export function HolidayFormDialog({onClose, onSaved, editing, onNotFound}: HolidayFormDialogProps) {
   const formId = useId();
   const [date, setDate] = useState(editing ? editing.holidayDate : "");
   const [name, setName] = useState(editing ? editing.name : "");
@@ -50,6 +51,7 @@ export function HolidayFormDialog({onClose, onSaved, editing}: HolidayFormDialog
       const code = getErrorCode(error);
       setErrorMessage(toHolidayErrorMessage(code));
       setSubmitting(false);
+      if(code === "HOLIDAY_NOT_FOUND") onNotFound();
     }
   }
 
