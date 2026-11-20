@@ -21,6 +21,9 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     title: "시스템 관리",
     roles: ["SUPER_ADMIN"],
-    items: [{ label: "회사", path: "/admin/companies" }]
+    items: [
+      { label: "회사", path: "/admin/companies" },
+      { label: "공휴일", path: "/admin/public-holidays" }
+    ]
   }
 ];

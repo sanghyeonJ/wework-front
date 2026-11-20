@@ -12,6 +12,7 @@ import { MembersPage } from "../core/member/pages/MembersPage";
 import { attendanceModule } from "../modules/attendance";
 import { HomePage } from "./HomePage";
 import { HolidaysPage } from "../core/holiday/pages/HolidaysPage";
+import { PublicHolidaysPage } from "../core/holiday/pages/PublicHolidaysPage";
 
 export const router = createBrowserRouter([
 
@@ -45,6 +46,7 @@ export const router = createBrowserRouter([
             element: <RequireRole roles={["SUPER_ADMIN"]} />,
             children: [
               { path: "/admin/companies", element: <PlaceholderPage title="회사" /> },
+              { path: "/admin/public-holidays", element: <PublicHolidaysPage /> }
             ]
           },
           // 모듈 (모듈이 자기 라우트를 정의, app은 끼워 넣기만 함)
