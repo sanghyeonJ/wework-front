@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { PageHeader } from "../../../shared/components/PageHeader";
 import type { CompanyHoliday } from "../types";
-import { getCompanyHolidays } from "../api";
+import { deleteCompanyHoliday, getCompanyHolidays } from "../api";
 import { toHolidayErrorMessage } from "../errorMessages";
 import { getErrorCode } from "../../../shared/api/client";
 import { todayString } from "../../../shared/utils/format";
@@ -9,8 +9,9 @@ import { useSearchParams } from "react-router";
 import { SelectField } from "../../../shared/components/SelectField";
 import { HolidayFormDialog } from "../components/HolidayFormDialog";
 import { Button } from "../../../shared/components/Button";
-import { Pencil, Plus } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { IconButton } from "../../../shared/components/IconButton";
+import { ConfirmDialog } from "../../../shared/components/ConfirmDialog";
 
 
 // 백엔드의 2015와 같은 값
@@ -40,6 +41,11 @@ export function HolidaysPage() {
   // 대화상자
   const [formTarget, setFormTarget] = useState<FormTarget | null>(null);
 
+  // 삭제
+  const [deleteTarget, setDeleteTarget] = useState<CompanyHoliday | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
   // 처음 열릴 때, 연도가 바뀔 때
   useEffect(() => {
     let ignore = false;
@@ -63,6 +69,30 @@ export function HolidaysPage() {
 
   function reload() {
     setReloadKey((key) => key + 1);
+  }
+
+  function closeDelete() {
+    setDeleteTarget(null);
+    setDeleteError(null);
+  }
+
+  async function handleDelete() {
+    if(!deleteTarget || deleting) return;
+
+    setDeleting(true);
+    setDeleteError(null);
+
+    try {
+      await deleteCompanyHoliday(deleteTarget.id);
+      closeDelete();
+      reload();
+    } catch(error) {
+      const code = getErrorCode(error);
+      setDeleteError(toHolidayErrorMessage(code));
+      if(code === "HOLIDAY_NOT_FOUND") reload();
+    } finally {
+      setDeleting(false);
+    }
   }
 
   return (
@@ -126,6 +156,12 @@ export function HolidaysPage() {
                         >
                           <Pencil aria-hidden="true" className="size-4" />
                         </IconButton>
+                        <IconButton
+                          label={`${item.name} 삭제`}
+                          onClick={() => setDeleteTarget(item)}
+                        >
+                          <Trash2 aria-hidden="true" className="size-4" />
+                        </IconButton>
                       </div>
                     </td>
                   </tr>
@@ -144,6 +180,25 @@ export function HolidaysPage() {
             reload();
           }}
           editing={formTarget.mode === "edit" ? formTarget.item : undefined}
+        />
+      }
+
+      {deleteTarget && 
+        <ConfirmDialog 
+          open
+          title={`${deleteTarget.name} 삭제`}
+          message={
+            <>
+              <strong className="font-semibold">{deleteTarget.name}</strong> 휴일을
+              삭제합니다. <br />삭제한 뒤에는 되돌릴 수 없습니다.
+              {deleteTarget.recurring && <span className="mt-2 block text-sm text-danger">매년 반복 휴일은 모든 해에서 삭제됩니다.</span>}
+            </>
+          }
+          confirmLabel="삭제"
+          busy={deleting}
+          errorMessage={deleteError}
+          onConfirm={() => void handleDelete()}
+          onClose={closeDelete}
         />
       }
     </div>
