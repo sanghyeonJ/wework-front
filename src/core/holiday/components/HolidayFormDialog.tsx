@@ -2,20 +2,22 @@ import { useId, useState, type SubmitEvent } from "react";
 import { Button } from "../../../shared/components/Button";
 import { Dialog } from "../../../shared/components/Dialog";
 import { TextField } from "../../../shared/components/TextField";
-import { createCompanyHoliday } from "../api";
+import { createCompanyHoliday, updateCompanyHoliday } from "../api";
 import { getErrorCode } from "../../../shared/api/client";
 import { toHolidayErrorMessage } from "../errorMessages";
+import type { CompanyHoliday } from "../types";
 
 interface HolidayFormDialogProps {
   onClose: () => void;
   onSaved: () => void;
+  editing?: CompanyHoliday;
 }
 
-export function HolidayFormDialog({onClose, onSaved}: HolidayFormDialogProps) {
+export function HolidayFormDialog({onClose, onSaved, editing}: HolidayFormDialogProps) {
   const formId = useId();
-  const [date, setDate] = useState("");
-  const [name, setName] = useState("");
-  const [recurring, setRecurring] = useState(false);
+  const [date, setDate] = useState(editing ? editing.holidayDate : "");
+  const [name, setName] = useState(editing ? editing.name : "");
+  const [recurring, setRecurring] = useState(editing ? editing.recurring : false);
 
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -38,7 +40,11 @@ export function HolidayFormDialog({onClose, onSaved}: HolidayFormDialogProps) {
     setErrorMessage(null);
     try {
       const request = {holidayDate: date, name: trimmedName, recurring: recurring}
-      await createCompanyHoliday(request);
+      if (editing) {
+        await updateCompanyHoliday(editing.id, request);
+      } else {
+        await createCompanyHoliday(request);
+      }
       onSaved();
     } catch (error) {
       const code = getErrorCode(error);
@@ -50,12 +56,14 @@ export function HolidayFormDialog({onClose, onSaved}: HolidayFormDialogProps) {
   return (
     <Dialog
       open
-      title="휴일 추가"
+      title={editing ? "휴일 수정" : "휴일 추가"}
       onClose={onClose}
       footer={
         <>
           <Button onClick={onClose} disabled={submitting}>취소</Button>
-          <Button type="submit" form={formId} variant="primary" disabled={submitting}>추가</Button>
+          <Button type="submit" form={formId} variant="primary" disabled={submitting}>
+            {editing ? "수정" : "추가"}
+          </Button>
         </>
       }
     >
