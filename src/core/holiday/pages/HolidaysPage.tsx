@@ -69,15 +69,38 @@ export function HolidaysPage() {
       </SelectField>
 
 
-      {loading && <p>불러오는 중입니다.</p>}
-      {loadError && <p className="text-danger">{loadError}</p>}
-      {!loading && !loadError && items.length === 0 && <p>등록된 휴일이 없습니다.</p>}
-      {!loading && !loadError && items.length > 0 && (
-        <ul className="flex flex-col gap-2">
-          {items.map((item) => (
-            <li key={item.id}>{item.name} {item.holidayDate} {item.recurring && "매년 반복"}</li>
-          ))}
-        </ul>
+      {loading && <p role="status" className="text-sm text-fg-muted">불러오는 중입니다.</p>}
+      {loadError && <p role="alert" className="text-sm text-danger">{loadError}</p>}
+      {!loading && !loadError && (
+        <div className="min-h-0 flex-1 overflow-auto rounded-lg border border-line">
+          {items.length === 0 ? (
+            <p className="px-4 py-6 text-sm text-fg-muted">등록된 휴일이 없습니다.</p>
+          ) : (
+            <table className="w-full whitespace-nowrap text-left">
+              <colgroup>
+                <col style={{width: '35%'}} />
+                <col style={{width: '35%'}} />
+                <col/>
+              </colgroup>
+              <thead className="sticky top-0 bg-chrome text-sm text-fg-muted">
+                <tr className="border-b border-line">
+                  <th scope="col" className="px-4 py-2 font-normal">날짜</th>
+                  <th scope="col" className="px-4 py-2 font-normal">이름</th>
+                  <th scope="col" className="px-4 py-2 font-normal">반복</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id} className="border-b border-line last:border-b-0 hover:bg-hover/50">
+                    <td className="px-4 py-2">{item.holidayDate}</td>
+                    <td className="px-4 py-2">{item.name}</td>
+                    <td className="px-4 py-2">{item.recurring && "매년 반복"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       )}
     </div>
   );
