@@ -13,7 +13,8 @@ export const NAV_SECTIONS: NavSection[] = [
     items: [
       { label: "부서", path: "/company/departments" },
       { label: "직급·직책", path: "/company/positions" },
-      { label: "사원", path: "/company/members" }
+      { label: "사원", path: "/company/members" },
+      { label: "휴일", path: "/company/holidays" }
     ]
   },
   ...attendanceModule.navSections,

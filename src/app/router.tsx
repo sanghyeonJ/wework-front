@@ -11,6 +11,7 @@ import { DepartmentsPage } from "../core/department/pages/DepartmentsPage";
 import { MembersPage } from "../core/member/pages/MembersPage";
 import { attendanceModule } from "../modules/attendance";
 import { HomePage } from "./HomePage";
+import { HolidaysPage } from "../core/holiday/pages/HolidaysPage";
 
 export const router = createBrowserRouter([
 
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
               { path: "/company/departments", element: <DepartmentsPage /> },
               { path: "/company/positions", element: <PositionsPage /> },
               { path: "/company/members", element: <MembersPage /> },
+              { path: "/company/holidays", element: <HolidaysPage /> },
             ]
           },
           // 최고관리자 (백엔드 /api/admin/**)
