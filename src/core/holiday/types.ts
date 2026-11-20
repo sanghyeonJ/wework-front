@@ -19,3 +19,15 @@ export interface CompanyHolidayRequest {
   name: string;
   recurring: boolean;
 }
+
+export interface PublicHoliday {
+  holidayDate: string;
+  name: string;
+}
+
+export interface PublicHolidaySyncResult {
+  countryCode: string;
+  year: number;
+  fetchedCount: number;
+  addedCount: number;
+}
