@@ -77,7 +77,7 @@ export function HolidayFormDialog({onClose, onSaved}: HolidayFormDialogProps) {
           onChange={(e) => setName(e.target.value)}
         />
         <div>
-          <label className="flex items-center gap-2">
+          <label className="flex items-center gap-2 size-fit">
             <input 
               id={`${formId}-recurring`}
               type="checkbox"
