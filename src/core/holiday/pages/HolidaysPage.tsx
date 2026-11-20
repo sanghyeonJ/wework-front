@@ -26,6 +26,7 @@ export function HolidaysPage() {
   const [items, setItems] = useState<CompanyHoliday[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
   // 연도 목록
   const yearCount = maxYear - MIN_HOLIDAY_YEAR + 1;
@@ -57,7 +58,11 @@ export function HolidaysPage() {
     return () => {
       ignore = true;
     }
-  }, [year]);
+  }, [year, reloadKey]);
+
+  function reload() {
+    setReloadKey((key) => key + 1);
+  }
 
   return (
     <div className="flex flex-col gap-4 p-6">
@@ -121,6 +126,10 @@ export function HolidaysPage() {
       {formTarget && 
         <HolidayFormDialog 
           onClose={() => setFormTarget(null)}
+          onSaved={() => {
+            setFormTarget(null);
+            reload();
+          }}
         />
       }
     </div>
