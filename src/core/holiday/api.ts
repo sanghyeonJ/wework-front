@@ -1,5 +1,5 @@
 import { api } from "../../shared/api/client";
-import type { CompanyHoliday, CompanyHolidayRequest, PublicHoliday, PublicHolidaySyncResult } from "./types";
+import type { CompanyHoliday, CompanyHolidayRequest, Holiday, PublicHoliday, PublicHolidaySyncResult } from "./types";
 
 
 export async function getCompanyHolidays(year: number): Promise<CompanyHoliday[]> {
@@ -27,5 +27,10 @@ export async function getPublicHolidays(countryCode: string, year: number): Prom
 
 export async function syncPublicHolidays(countryCode: string, year: number): Promise<PublicHolidaySyncResult> {
   const res = await api.post<PublicHolidaySyncResult>("/api/admin/public-holidays/sync", null, {params: {countryCode, year}});
+  return res.data;
+}
+
+export async function getYearHolidays(year: number): Promise<Holiday[]> {
+  const res = await api.get<Holiday[]>("/api/holidays", { params: { year } });
   return res.data;
 }
