@@ -267,7 +267,7 @@ export function MyAttendancePage() {
                           {attendance && (attendance.checkOutAt ? formatTime(attendance.checkOutAt) : "-")}
                         </td>
                         <td className="py-2.5 px-4 text-center">
-                          {attendance && (
+                          {attendance && !dayoff && (
                             attendance.late || attendance.earlyLeave ? (
                               <span className="text-danger">
                                 {[attendance.late && "지각", attendance.earlyLeave && "조퇴"]
