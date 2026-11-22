@@ -20,6 +20,7 @@ export interface MeResponse{
   companyName: string | null;
   departmentId: number | null;
   departmentName: string | null;
+  hireDate: string | null;
   jobGradeName: string | null;
   jobTitleName: string | null;
 }
