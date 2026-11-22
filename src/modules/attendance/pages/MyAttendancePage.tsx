@@ -10,6 +10,9 @@ import { SelectField } from "../../../shared/components/SelectField";
 import { Button } from "../../../shared/components/Button";
 import { getYearHolidays } from "../../../core/holiday/api";
 import type { Holiday } from "../../../core/holiday/types";
+import type { LeaveSummary } from "../../../core/leave/types";
+import { getMyLeaveRequests } from "../../../core/leave/api";
+import { LEAVE_TYPE_LABELS } from "../../../core/leave/labels";
 
 const YEAR_COUNT = 5; // 올해 포함 최근 5년
 
@@ -41,6 +44,28 @@ function isWeekend(date: string): boolean {
   return weekday === 0 || weekday === 6;
 }
 
+function toDateString(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function makeLeaveMap(leaves: LeaveSummary[]): Map<string, string> {
+  const leaveMap = new Map<string, string>();
+  for(const leave of leaves) {
+    const [year, month, day] = leave.startDate.split("-").map(Number);
+    const current = new Date(year, month - 1, day);
+    let dateString = toDateString(current);
+    do{
+      leaveMap.set(dateString, LEAVE_TYPE_LABELS[leave.leaveType]);
+      current.setDate(current.getDate() + 1);
+      dateString = toDateString(current);
+    }while(dateString <= leave.endDate);
+  }
+  return leaveMap;
+}
+
 // 내 근태 기록 (월별)
 export function MyAttendancePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -61,9 +86,13 @@ export function MyAttendancePage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
 
-  const [holidays, setHolidays] = useState<Holiday[]>();
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
   const [holidayLoadFailed, setHolidayLoadFailed] = useState(false);
 
+  const [leaves, setLeaves] = useState<LeaveSummary[]>([]);
+  const [leaveLoadFailed, setLeaveLoadFailed] = useState(false);
+
+  // 내 근태
   useEffect(() => {
     let ignore = false;
     setLoading(true);
@@ -89,7 +118,7 @@ export function MyAttendancePage() {
     }
   }, [year, month, reloadKey]);
 
-
+  // 휴일
   useEffect(() => {
     let ignore = false;
     setHolidayLoadFailed(false);
@@ -111,6 +140,28 @@ export function MyAttendancePage() {
     }
   }, [year]);
 
+  // 내 휴가
+  useEffect(() => {
+    let ignore = false;
+    setLeaveLoadFailed(false);
+
+    Promise.all([getMyLeaveRequests(year - 1, 0, 100, "APPROVED"), getMyLeaveRequests(year, 0, 100, "APPROVED")])
+      .then(([previous, current]) => {
+        if (!ignore) {
+          setLeaves([...previous.content, ...current.content]);
+        }
+      })
+      .catch(() => {
+        if (ignore) return;
+        setLeaves([]);
+        setLeaveLoadFailed(true);
+      });
+
+    return () => {
+      ignore = true;
+    }
+  }, [year]);
+
   function changeYear(value: string) {
     setSearchParams({ year: value, month: String(month) }, { replace: true });
   }
@@ -121,15 +172,18 @@ export function MyAttendancePage() {
 
   const lateCount = records?.filter((record) => record.late).length ?? 0;
   const earlyLeaveCount = records?.filter((record) => record.earlyLeave).length ?? 0;
+
   const recordMap = new Map<string, Attendance>((records ?? []).map((record) => [record.workDate, record]));
   const dates = makeMonthDates(year, month);
+  
   const holidayMap = new Map<string, string>();
-  if (holidays) {
-    for (const holiday of holidays) {
-      const existing = holidayMap.get(holiday.date);
-      holidayMap.set(holiday.date, existing ? `${existing}, ${holiday.name}` : holiday.name);
-    }
+  for (const holiday of holidays) {
+    const existing = holidayMap.get(holiday.date);
+    holidayMap.set(holiday.date, existing ? `${existing}, ${holiday.name}` : holiday.name);
   }
+
+  const leaveMap = makeLeaveMap(leaves);
+
 
   return (
     <div className="p-6">
@@ -180,6 +234,7 @@ export function MyAttendancePage() {
               기록 {records.length}일 · 지각 {lateCount}회 · 조퇴 {earlyLeaveCount}회
             </p>
             {holidayLoadFailed && <p className="text-sm text-danger">휴일 조회에 실패했습니다.</p>}
+            {leaveLoadFailed && <p className="text-sm text-danger">내 휴가 조회에 실패했습니다.</p>}
             <div className="overflow-x-auto">
               <table className="w-full min-w-96 text-left">
                 <colgroup>
@@ -203,6 +258,7 @@ export function MyAttendancePage() {
                     const attendance = recordMap.get(date);
                     const holidayName = holidayMap.get(date);
                     const dayoff = isWeekend(date) || holidayName !== undefined;
+                    const leaveLabel = dayoff ? undefined : leaveMap.get(date);
                     return (
                       <tr key={date} className={`border-b border-line ${dayoff ? "bg-app" : ""}`}>
                         <td className="py-2.5 px-4">{formatWorkDate(date)}</td>
@@ -223,7 +279,7 @@ export function MyAttendancePage() {
                             )
                           )}
                         </td>
-                        <td className="py-2.5 text-center">{holidayName}</td>
+                        <td className="py-2.5 text-center">{holidayName ?? leaveLabel}</td>
                       </tr>
                     )
                   })}
