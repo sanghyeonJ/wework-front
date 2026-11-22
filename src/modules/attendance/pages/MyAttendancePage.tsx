@@ -8,6 +8,8 @@ import { getErrorCode } from "../../../shared/api/client";
 import { PageHeader } from "../../../shared/components/PageHeader";
 import { SelectField } from "../../../shared/components/SelectField";
 import { Button } from "../../../shared/components/Button";
+import { getYearHolidays } from "../../../core/holiday/api";
+import type { Holiday } from "../../../core/holiday/types";
 
 const YEAR_COUNT = 5; // 올해 포함 최근 5년
 
@@ -33,6 +35,12 @@ function makeMonthDates(year: number, month: number): string[] {
   return dates;
 }
 
+function isWeekend(date: string): boolean {
+  const [year, month, day] = date.split("-").map(Number);
+  const weekday = new Date(year, month - 1, day).getDay();
+  return weekday === 0 || weekday === 6;
+}
+
 // 내 근태 기록 (월별)
 export function MyAttendancePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -52,6 +60,9 @@ export function MyAttendancePage() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+
+  const [holidays, setHolidays] = useState<Holiday[]>();
+  const [holidayLoadFailed, setHolidayLoadFailed] = useState(false);
 
   useEffect(() => {
     let ignore = false;
@@ -78,6 +89,28 @@ export function MyAttendancePage() {
     }
   }, [year, month, reloadKey]);
 
+
+  useEffect(() => {
+    let ignore = false;
+    setHolidayLoadFailed(false);
+
+    getYearHolidays(year)
+      .then((data) => {
+        if(!ignore) {
+          setHolidays(data);
+        }
+      })
+      .catch(() => {
+        if (ignore) return;
+        setHolidays([]);
+        setHolidayLoadFailed(true);
+      });
+
+    return () => {
+      ignore = true
+    }
+  }, [year]);
+
   function changeYear(value: string) {
     setSearchParams({ year: value, month: String(month) }, { replace: true });
   }
@@ -90,6 +123,13 @@ export function MyAttendancePage() {
   const earlyLeaveCount = records?.filter((record) => record.earlyLeave).length ?? 0;
   const recordMap = new Map<string, Attendance>((records ?? []).map((record) => [record.workDate, record]));
   const dates = makeMonthDates(year, month);
+  const holidayMap = new Map<string, string>();
+  if (holidays) {
+    for (const holiday of holidays) {
+      const existing = holidayMap.get(holiday.date);
+      holidayMap.set(holiday.date, existing ? `${existing}, ${holiday.name}` : holiday.name);
+    }
+  }
 
   return (
     <div className="p-6">
@@ -139,28 +179,38 @@ export function MyAttendancePage() {
             <p className="mb-3 text-sm text-fg-muted">
               기록 {records.length}일 · 지각 {lateCount}회 · 조퇴 {earlyLeaveCount}회
             </p>
+            {holidayLoadFailed && <p className="text-sm text-danger">휴일 조회에 실패했습니다.</p>}
             <div className="overflow-x-auto">
               <table className="w-full min-w-96 text-left">
+                <colgroup>
+                  <col style={{width: "14%"}} />
+                  <col style={{width: "22%"}} />
+                  <col style={{width: "22%"}} />
+                  <col style={{width: "22%"}} />
+                  <col />
+                </colgroup>
                 <thead className="border-b border-line text-sm text-fg-muted">
                   <tr>
-                    <th className="py-2 pr-4 font-medium">날짜</th>
-                    <th className="py-2 pr-4 font-medium">출근</th>
-                    <th className="py-2 pr-4 font-medium">퇴근</th>
-                    <th className="py-2 pr-4 font-medium">상태</th>
-                    <th className="py-2 font-medium">비고</th>
+                    <th className="py-2 px-4 font-medium">날짜</th>
+                    <th className="py-2 px-4 font-medium text-center">출근</th>
+                    <th className="py-2 px-4 font-medium text-center">퇴근</th>
+                    <th className="py-2 px-4 font-medium text-center">상태</th>
+                    <th className="py-2 font-medium text-center">비고</th>
                   </tr>
                 </thead>
                 <tbody>
                   {dates.map((date) => {
                     const attendance = recordMap.get(date);
+                    const holidayName = holidayMap.get(date);
+                    const dayoff = isWeekend(date) || holidayName !== undefined;
                     return (
-                      <tr key={date} className="border-b border-line">
-                        <td className="py-2.5 pr-4">{formatWorkDate(date)}</td>
-                        <td className="py-2.5 pr-4">{attendance && formatTime(attendance.checkInAt)}</td>
-                        <td className="py-2.5 pr-4">
+                      <tr key={date} className={`border-b border-line ${dayoff ? "bg-app" : ""}`}>
+                        <td className="py-2.5 px-4">{formatWorkDate(date)}</td>
+                        <td className="py-2.5 px-4 text-center">{attendance && formatTime(attendance.checkInAt)}</td>
+                        <td className="py-2.5 px-4 text-center">
                           {attendance && (attendance.checkOutAt ? formatTime(attendance.checkOutAt) : "-")}
                         </td>
-                        <td className="py-2.5 pr-4">
+                        <td className="py-2.5 px-4 text-center">
                           {attendance && (
                             attendance.late || attendance.earlyLeave ? (
                               <span className="text-danger">
@@ -173,7 +223,7 @@ export function MyAttendancePage() {
                             )
                           )}
                         </td>
-                        <td className="py-2.5"></td>
+                        <td className="py-2.5 text-center">{holidayName}</td>
                       </tr>
                     )
                   })}
