@@ -24,6 +24,15 @@ function formatWorkDate(workDate: string): string {
   return `${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")} (${weekday})`;
 }
 
+function makeMonthDates(year: number, month: number): string[] {
+  const lastDay = new Date(year, month, 0).getDate();
+  const dates: string[] = [];
+  for(let day = 1; day <= lastDay; day++) {
+    dates.push(`${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`);
+  }
+  return dates;
+}
+
 // 내 근태 기록 (월별)
 export function MyAttendancePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,7 +60,9 @@ export function MyAttendancePage() {
 
     fetchMyAttendances(year, month)
       .then((data) => {
-        if (!ignore) setRecords(data);
+        if (!ignore) {
+          setRecords(data);
+        }
       })
       .catch((error) => {
         if (ignore) return;
@@ -77,6 +88,8 @@ export function MyAttendancePage() {
 
   const lateCount = records?.filter((record) => record.late).length ?? 0;
   const earlyLeaveCount = records?.filter((record) => record.earlyLeave).length ?? 0;
+  const recordMap = new Map<string, Attendance>((records ?? []).map((record) => [record.workDate, record]));
+  const dates = makeMonthDates(year, month);
 
   return (
     <div className="p-6">
@@ -126,44 +139,47 @@ export function MyAttendancePage() {
             <p className="mb-3 text-sm text-fg-muted">
               기록 {records.length}일 · 지각 {lateCount}회 · 조퇴 {earlyLeaveCount}회
             </p>
-            {records.length === 0 ? (
-              <p className="text-fg-muted">이 달에는 근태 기록이 없습니다.</p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-96 text-left">
-                  <thead className="border-b border-line text-sm text-fg-muted">
-                    <tr>
-                      <th className="py-2 pr-4 font-medium">날짜</th>
-                      <th className="py-2 pr-4 font-medium">출근</th>
-                      <th className="py-2 pr-4 font-medium">퇴근</th>
-                      <th className="py-2 font-medium">상태</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {records.map((record) => (
-                      <tr key={record.id} className="border-b border-line">
-                        <td className="py-2.5 pr-4">{formatWorkDate(record.workDate)}</td>
-                        <td className="py-2.5 pr-4">{formatTime(record.checkInAt)}</td>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-96 text-left">
+                <thead className="border-b border-line text-sm text-fg-muted">
+                  <tr>
+                    <th className="py-2 pr-4 font-medium">날짜</th>
+                    <th className="py-2 pr-4 font-medium">출근</th>
+                    <th className="py-2 pr-4 font-medium">퇴근</th>
+                    <th className="py-2 pr-4 font-medium">상태</th>
+                    <th className="py-2 font-medium">비고</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dates.map((date) => {
+                    const attendance = recordMap.get(date);
+                    return (
+                      <tr key={date} className="border-b border-line">
+                        <td className="py-2.5 pr-4">{formatWorkDate(date)}</td>
+                        <td className="py-2.5 pr-4">{attendance && formatTime(attendance.checkInAt)}</td>
                         <td className="py-2.5 pr-4">
-                          {record.checkOutAt ? formatTime(record.checkOutAt) : "-"}
+                          {attendance && (attendance.checkOutAt ? formatTime(attendance.checkOutAt) : "-")}
                         </td>
-                        <td className="py-2.5">
-                          {record.late || record.earlyLeave ? (
-                            <span className="text-danger">
-                              {[record.late && "지각", record.earlyLeave && "조퇴"]
-                                .filter(Boolean)
-                                .join(" · ")}
-                            </span>
-                          ) : (
-                            <span className="text-fg-muted">정상</span>
+                        <td className="py-2.5 pr-4">
+                          {attendance && (
+                            attendance.late || attendance.earlyLeave ? (
+                              <span className="text-danger">
+                                {[attendance.late && "지각", attendance.earlyLeave && "조퇴"]
+                                  .filter(Boolean)
+                                  .join(" · ")}
+                              </span>
+                            ) : (
+                              <span className="text-fg-muted">정상</span>
+                            )
                           )}
                         </td>
+                        <td className="py-2.5"></td>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
