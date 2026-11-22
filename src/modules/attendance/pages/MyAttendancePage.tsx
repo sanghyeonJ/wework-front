@@ -13,6 +13,7 @@ import type { Holiday } from "../../../core/holiday/types";
 import type { LeaveSummary } from "../../../core/leave/types";
 import { getMyLeaveRequests } from "../../../core/leave/api";
 import { LEAVE_TYPE_LABELS } from "../../../core/leave/labels";
+import { useAuthStore } from "../../../core/auth/store";
 
 const YEAR_COUNT = 5; // 올해 포함 최근 5년
 
@@ -91,6 +92,8 @@ export function MyAttendancePage() {
 
   const [leaves, setLeaves] = useState<LeaveSummary[]>([]);
   const [leaveLoadFailed, setLeaveLoadFailed] = useState(false);
+
+  const meHireDate = useAuthStore((state) => state.me?.hireDate);
 
   // 내 근태
   useEffect(() => {
@@ -259,6 +262,12 @@ export function MyAttendancePage() {
                     const holidayName = holidayMap.get(date);
                     const dayoff = isWeekend(date) || holidayName !== undefined;
                     const leaveLabel = dayoff ? undefined : leaveMap.get(date);
+                    const absent = date < today
+                      && !dayoff
+                      && !attendance
+                      && !leaveLabel
+                      && !!meHireDate && meHireDate <= date
+                      && !loading;
                     return (
                       <tr key={date} className={`border-b border-line ${dayoff ? "bg-app" : ""}`}>
                         <td className="py-2.5 px-4">{formatWorkDate(date)}</td>
@@ -279,7 +288,10 @@ export function MyAttendancePage() {
                             )
                           )}
                         </td>
-                        <td className="py-2.5 text-center">{holidayName ?? leaveLabel}</td>
+                        <td className="py-2.5 text-center">
+                          {holidayName ?? leaveLabel}
+                          {absent ? <span className="text-danger">결근</span> : ""}
+                        </td>
                       </tr>
                     )
                   })}
