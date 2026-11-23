@@ -1,13 +1,15 @@
 import { useSearchParams } from "react-router";
 import { todayString } from "../../../shared/utils/format";
 import { useEffect, useState } from "react";
-import type { LeaveBalance } from "../types";
+import type { LeaveBalance, LeaveStatus } from "../types";
 import { getMyBalance } from "../api";
 import { toLeaveErrorMessage } from "../errorMessages";
 import { getErrorCode } from "../../../shared/api/client";
 import { PageHeader } from "../../../shared/components/PageHeader";
 import { SelectField } from "../../../shared/components/SelectField";
 import { Button } from "../../../shared/components/Button";
+import { LEAVE_STATUS_LABELS } from "../labels";
+import { LeaveRequestList } from "../components/LeaveRequestList";
 
 // 백엔드의 2015와 같은 값
 const MIN_LEAVE_YEAR = 2015;
@@ -16,6 +18,14 @@ const MIN_LEAVE_YEAR = 2015;
 function parseInteger(value: string | null): number | null {
   if (value === null || !/^\d+$/.test(value)) return null;
   return Number(value);
+}
+
+const STATUSES = Object.keys(LEAVE_STATUS_LABELS) as LeaveStatus[];
+
+function parseStatus(value: string | null): LeaveStatus | undefined {
+  if (value === null) return undefined;
+  if (STATUSES.includes(value as LeaveStatus)) return value as LeaveStatus;
+  return undefined;
 }
 
 export function MyLeavePage() {
@@ -27,6 +37,8 @@ export function MyLeavePage() {
 
   const yearParams = parseInteger(searchParams.get("year"));
   const year = yearParams !== null && years.includes(yearParams) ? yearParams : thisYear;
+
+  const status = parseStatus(searchParams.get("status"));
 
   const [balance, setBalance] = useState<LeaveBalance | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,8 +71,18 @@ export function MyLeavePage() {
     }
   }, [year, reloadKey]);
 
+  function moveTo(nextYear: number, nextStatus: LeaveStatus | undefined) {
+    const params: Record<string, string> = { year: String(nextYear) };
+    if (nextStatus !== undefined) {
+      params.status = nextStatus;
+    }
+    setSearchParams(params, { replace: true });
+  }
   function changeYear(value: string) {
-    setSearchParams({ year: value }, { replace: true });
+    moveTo(Number(value), status);
+  }
+  function changeStatus(value: string) {
+    moveTo(year, parseStatus(value));
   }
 
   return (
@@ -77,6 +99,18 @@ export function MyLeavePage() {
         >
           {years.map((y) => (
             <option key={y} value={y}>{y}년</option>
+          ))}
+        </SelectField>
+        <SelectField
+          id="leave-status"
+          label="상태"
+          className="w-32"
+          value={status ?? ""}
+          onChange={(e) => changeStatus(e.target.value)}
+        >
+          <option value="">전체</option>
+          {STATUSES.map((s) => (
+            <option key={s} value={s}>{LEAVE_STATUS_LABELS[s]}</option>
           ))}
         </SelectField>
       </div>
@@ -114,6 +148,14 @@ export function MyLeavePage() {
             </p>
           </div>
         )}
+      </div>
+
+      <div className="mt-8">
+        <LeaveRequestList 
+          key={`${year}-${status ?? "ALL"}`}
+          year={year}
+          status={status}
+        />
       </div>
     </div>
   );
