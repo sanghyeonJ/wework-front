@@ -10,3 +10,11 @@ export interface LeaveSummary {
   status: LeaveStatus;
   approvalRequestId: number;
 }
+
+export interface LeaveBalance {
+  year: number;
+  grantedDays: number;
+  usedDays: number;
+  remainingDays: number;
+  pendingDays: number;
+}
