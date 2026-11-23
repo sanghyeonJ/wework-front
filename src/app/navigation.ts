@@ -19,6 +19,13 @@ export const NAV_SECTIONS: NavSection[] = [
   },
   ...attendanceModule.navSections,
   {
+    title: "휴가",
+    roles: ["COMPANY_ADMIN", "EMPLOYEE"],
+    items: [
+      { label: "내 휴가", path: "/leave/me" },
+    ]
+  },
+  {
     title: "시스템 관리",
     roles: ["SUPER_ADMIN"],
     items: [

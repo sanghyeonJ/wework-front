@@ -13,6 +13,7 @@ import { attendanceModule } from "../modules/attendance";
 import { HomePage } from "./HomePage";
 import { HolidaysPage } from "../core/holiday/pages/HolidaysPage";
 import { PublicHolidaysPage } from "../core/holiday/pages/PublicHolidaysPage";
+import { MyLeavePage } from "../core/leave/pages/MyLeavePage";
 
 export const router = createBrowserRouter([
 
@@ -39,6 +40,13 @@ export const router = createBrowserRouter([
               { path: "/company/positions", element: <PositionsPage /> },
               { path: "/company/members", element: <MembersPage /> },
               { path: "/company/holidays", element: <HolidaysPage /> },
+            ]
+          },
+          // 사용자 + 기업관리자
+          {
+            element: <RequireRole roles={["COMPANY_ADMIN", "EMPLOYEE"]} />,
+            children: [
+              { path: "/leave/me", element: <MyLeavePage /> },
             ]
           },
           // 최고관리자 (백엔드 /api/admin/**)
