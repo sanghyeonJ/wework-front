@@ -70,27 +70,34 @@ export function LeaveRequestList({year, status}: LeaveRequestListProps) {
         <div className={loading ? "opacity-60": undefined}>
           <div className="overflow-x-auto">
             <table className="w-full min-w-96 text-left">
+              <colgroup>
+                <col />
+                <col style={{width: "12%"}} />
+                <col style={{width: "12%"}} />
+                <col style={{width: "12%"}} />
+                <col style={{width: "16%"}} />
+              </colgroup>
               <thead className="border-b border-line text-sm text-fg-muted">
                 <tr>
-                  <th className="py-2 pr-4 font-medium">기간</th>
-                  <th className="py-2 pr-4 font-medium">종류</th>
-                  <th className="py-2 pr-4 font-medium">일수</th>
-                  <th className="py-2 pr-4 font-medium">상태</th>
-                  <th className="py-2 font-medium">작업</th>
+                  <th className="py-2 px-4 font-medium">기간</th>
+                  <th className="py-2 px-4 font-medium">종류</th>
+                  <th className="py-2 px-4 font-medium">일수</th>
+                  <th className="py-2 px-4 font-medium">상태</th>
+                  <th className="py-2 text-center font-medium">작업</th>
                 </tr>
               </thead>
               <tbody>
                 {result.content.map((leave) => (
                   <tr key={leave.id} className="border-b border-line">
-                    <td className="py-2.5 pr-4">
+                    <td className="py-2.5 px-4">
                       {leave.startDate === leave.endDate
                       ? leave.startDate
                       : `${leave.startDate} ~ ${leave.endDate}`}
                     </td>
-                    <td className="py-2.5 pr-4">{LEAVE_TYPE_LABELS[leave.leaveType]}</td>
-                    <td className="py-2.5 pr-4">{leave.days}일</td>
-                    <td className="py-2.5 pr-4">{LEAVE_STATUS_LABELS[leave.status]}</td>
-                    <td className="py-2.5">
+                    <td className="py-2.5 px-4">{LEAVE_TYPE_LABELS[leave.leaveType]}</td>
+                    <td className="py-2.5 px-4">{leave.days}일</td>
+                    <td className="py-2.5 px-4">{LEAVE_STATUS_LABELS[leave.status]}</td>
+                    <td className="py-2.5 text-center">
                       {leave.status === "PENDING" &&
                        <Button onClick={() => setCancelTarget(leave.approvalRequestId)}>취소</Button> 
                       }
