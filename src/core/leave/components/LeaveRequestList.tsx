@@ -34,9 +34,12 @@ export function LeaveRequestList({year, status}: LeaveRequestListProps) {
 
     getMyLeaveRequests(year, page, PAGE_SIZE, status)
       .then((data) => {
-        if (!ignore) {
-          setResult(data);
+        if (ignore) return;
+        if (data.content.length === 0 && page > 0) {
+          setPage(Math.max(page - 1, 0));
+          return;
         }
+        setResult(data);
       })
       .catch((error) => {
         if (ignore) return;
