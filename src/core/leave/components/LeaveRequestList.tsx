@@ -12,11 +12,12 @@ import { LeaveCancelDialog } from "./LeaveCancelDialog";
 export type LeaveRequestListProps = {
   year: number,
   status?: LeaveStatus;
+  onChanged: () => void;
 }
 
 const PAGE_SIZE = 10;
 
-export function LeaveRequestList({year, status}: LeaveRequestListProps) {
+export function LeaveRequestList({year, status, onChanged}: LeaveRequestListProps) {
 
   const [result, setResult] = useState<PageResponse<LeaveSummary> | null>(null);
   const [page, setPage] = useState(0);
@@ -55,6 +56,11 @@ export function LeaveRequestList({year, status}: LeaveRequestListProps) {
     }
   }, [year, status, page, reloadKey]);
 
+  function closeCancelDialog() {
+    setCancelTarget(null);
+    setReloadKey((key) => key + 1);
+    onChanged();
+  }
 
   return (
     <section>
@@ -124,8 +130,8 @@ export function LeaveRequestList({year, status}: LeaveRequestListProps) {
       {cancelTarget !== null && (
         <LeaveCancelDialog 
           approvalRequestId={cancelTarget}
-          onClose={() => { setCancelTarget(null); setReloadKey((key) => key + 1) }}
-          onCanceled={() => { setCancelTarget(null); setReloadKey((key) => key + 1) }}
+          onClose={closeCancelDialog}
+          onCanceled={closeCancelDialog}
         />
       )}
     </section>

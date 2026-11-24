@@ -155,6 +155,7 @@ export function MyLeavePage() {
           key={`${year}-${status ?? "ALL"}`}
           year={year}
           status={status}
+          onChanged={() => setReloadKey((key) => key + 1)}
         />
       </div>
     </div>
