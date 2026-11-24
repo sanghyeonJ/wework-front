@@ -7,6 +7,7 @@ import { getErrorCode } from "../../../shared/api/client";
 import { Button } from "../../../shared/components/Button";
 import { LEAVE_STATUS_LABELS, LEAVE_TYPE_LABELS } from "../labels";
 import { Pagination } from "../../../shared/components/Pagination";
+import { LeaveCancelDialog } from "./LeaveCancelDialog";
 
 export type LeaveRequestListProps = {
   year: number,
@@ -23,6 +24,8 @@ export function LeaveRequestList({year, status}: LeaveRequestListProps) {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+
+  const [cancelTarget, setCancelTarget] = useState<number | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -72,7 +75,8 @@ export function LeaveRequestList({year, status}: LeaveRequestListProps) {
                   <th className="py-2 pr-4 font-medium">기간</th>
                   <th className="py-2 pr-4 font-medium">종류</th>
                   <th className="py-2 pr-4 font-medium">일수</th>
-                  <th className="py-2 font-medium">상태</th>
+                  <th className="py-2 pr-4 font-medium">상태</th>
+                  <th className="py-2 font-medium">작업</th>
                 </tr>
               </thead>
               <tbody>
@@ -85,7 +89,12 @@ export function LeaveRequestList({year, status}: LeaveRequestListProps) {
                     </td>
                     <td className="py-2.5 pr-4">{LEAVE_TYPE_LABELS[leave.leaveType]}</td>
                     <td className="py-2.5 pr-4">{leave.days}일</td>
-                    <td className="py-2.5">{LEAVE_STATUS_LABELS[leave.status]}</td>
+                    <td className="py-2.5 pr-4">{LEAVE_STATUS_LABELS[leave.status]}</td>
+                    <td className="py-2.5">
+                      {leave.status === "PENDING" &&
+                       <Button onClick={() => setCancelTarget(leave.approvalRequestId)}>취소</Button> 
+                      }
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -100,6 +109,14 @@ export function LeaveRequestList({year, status}: LeaveRequestListProps) {
             />
           </div>
         </div>
+      )}
+
+      {cancelTarget !== null && (
+        <LeaveCancelDialog 
+          approvalRequestId={cancelTarget}
+          onClose={() => { setCancelTarget(null); setReloadKey((key) => key + 1) }}
+          onCanceled={() => { setCancelTarget(null); setReloadKey((key) => key + 1) }}
+        />
       )}
     </section>
   );
