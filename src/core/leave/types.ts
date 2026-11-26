@@ -18,3 +18,19 @@ export interface LeaveBalance {
   remainingDays: number;
   pendingDays: number;
 }
+
+export interface LeaveApplyRequest {
+  leaveType: LeaveType;
+  startDate: string;
+  endDate: string;
+  reason?: string;
+  approverIds: number[];
+}
+
+export interface LeaveApplyResponse {
+  id: number;
+}
+
+export interface LeaveDays {
+  days: number;
+}
