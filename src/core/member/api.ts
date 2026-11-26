@@ -1,6 +1,7 @@
 import { api } from "../../shared/api/client";
 import type { PageResponse } from "../../shared/types/api";
 import type { 
+  ApproverCandidateResponse,
   AssignableRole,
   MemberCreateRequest,
   MemberInviteResponse,
@@ -10,6 +11,8 @@ import type {
  } from "./types";
 
  const BASE = "/api/company/members";
+ // 사원이 호출할 수 있는 조회 (관리용 BASE와 경로가 다름)
+const LOOKUP_BASE = "/api/members";
 
 export async function getMembers(params: MemberSearchParams): Promise<PageResponse<MemberResponse>> {
   const res = await api.get<PageResponse<MemberResponse>>(BASE, { params });
@@ -42,5 +45,11 @@ export async function resignMember(id: number, resignDate: string): Promise<void
 // 초대 재발급 (INVITED만) → 새 초대 링크
 export async function reissueInvitation(id: number): Promise<MemberInviteResponse> {
   const res = await api.post<MemberInviteResponse>(`${BASE}/${id}/invitation`);
+  return res.data;
+}
+
+
+export async function getApproverCandidates(keyword?: string): Promise<ApproverCandidateResponse[]> {
+  const res = await api.get<ApproverCandidateResponse[]>(`${LOOKUP_BASE}/approver-candidates`, { params: { keyword } });
   return res.data;
 }

@@ -58,3 +58,12 @@ export interface MemberInviteResponse {
   inviteUrl: string;
   expiresAt: string;
 }
+
+// 결재자
+export interface ApproverCandidateResponse {
+  id: number;
+  name: string;
+  departmentName: string | null;
+  jobGradeName: string | null;
+  jobTitleName: string | null;
+}
