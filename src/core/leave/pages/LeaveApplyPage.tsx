@@ -8,6 +8,8 @@ import { TextField } from "../../../shared/components/TextField";
 import { getLeaveDays } from "../api";
 import { toLeaveErrorMessage } from "../errorMessages";
 import { getErrorCode } from "../../../shared/api/client";
+import type { ApproverCandidateResponse } from "../../member/types";
+import { ApproverPicker } from "../../approval/components/ApproverPicker";
 
 const LEAVE_TYPES = Object.keys(LEAVE_TYPE_LABELS) as LeaveType[];
 
@@ -23,6 +25,8 @@ export function LeaveApplyPage() {
   const [days, setDays] = useState<number | null>(null);
   const [daysError, setDaysError] = useState<string | null>(null);
   const [daysLoading, setDaysLoading] = useState(false);
+
+  const [approvers, setApprovers] = useState<ApproverCandidateResponse[]>([]);
 
   useEffect(() => {
     // 날짜가 비어 있으면 묻지 않고 안내를 숨김
@@ -88,6 +92,10 @@ export function LeaveApplyPage() {
         ) : (
           <p className="text-sm">사용 일수 <span className="font-semibold">{days}일</span></p>
         )}
+      </div>
+
+      <div className="mt-6 max-w-xl">
+        <ApproverPicker selected={approvers} onChange={setApprovers} />
       </div>
     </div>
   );
