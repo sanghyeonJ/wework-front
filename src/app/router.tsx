@@ -14,6 +14,7 @@ import { HomePage } from "./HomePage";
 import { HolidaysPage } from "../core/holiday/pages/HolidaysPage";
 import { PublicHolidaysPage } from "../core/holiday/pages/PublicHolidaysPage";
 import { MyLeavePage } from "../core/leave/pages/MyLeavePage";
+import { LeaveApplyPage } from "../core/leave/pages/LeaveApplyPage";
 
 export const router = createBrowserRouter([
 
@@ -47,6 +48,7 @@ export const router = createBrowserRouter([
             element: <RequireRole roles={["COMPANY_ADMIN", "EMPLOYEE"]} />,
             children: [
               { path: "/leave/me", element: <MyLeavePage /> },
+              { path: "/leave/apply", element: <LeaveApplyPage /> }
             ]
           },
           // 최고관리자 (백엔드 /api/admin/**)

@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { todayString } from "../../../shared/utils/format";
 import { useEffect, useState } from "react";
 import type { LeaveBalance, LeaveStatus } from "../types";
@@ -29,6 +29,7 @@ function parseStatus(value: string | null): LeaveStatus | undefined {
 }
 
 export function MyLeavePage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const thisYear = Number(todayString().slice(0, 4));
@@ -87,7 +88,15 @@ export function MyLeavePage() {
 
   return (
     <div className="p-6">
-      <PageHeader title="내 휴가" description="연차 잔여와 휴가 신청 내역을 확인합니다." />
+      <PageHeader 
+        title="내 휴가"
+        description="연차 잔여와 휴가 신청 내역을 확인합니다."
+        actions={
+          <Button variant="primary" onClick={() => navigate("/leave/apply")}>
+            휴가 신청
+          </Button>
+        }
+      />
 
       <div className="mt-5 flex items-end gap-3">
         <SelectField
