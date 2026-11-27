@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { PageHeader } from "../../../shared/components/PageHeader";
 import { LEAVE_TYPE_LABELS } from "../labels";
-import type { LeaveType } from "../types";
+import type { LeaveApplyRequest, LeaveType } from "../types";
 import { todayString } from "../../../shared/utils/format";
 import { SelectField } from "../../../shared/components/SelectField";
 import { TextField } from "../../../shared/components/TextField";
-import { getLeaveDays } from "../api";
+import { createLeaveRequest, getLeaveDays } from "../api";
 import { toLeaveErrorMessage } from "../errorMessages";
 import { getErrorCode } from "../../../shared/api/client";
 import type { ApproverCandidateResponse } from "../../member/types";
@@ -31,11 +31,14 @@ export function LeaveApplyPage() {
   const [daysLoading, setDaysLoading] = useState(false);
 
   const [approvers, setApprovers] = useState<ApproverCandidateResponse[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const canSubmit = days !== null &&
     days > 0 &&
     !daysLoading &&
-    approvers.length >= 1;
+    approvers.length >= 1 &&
+    !submitting;
 
 
   useEffect(() => {
@@ -69,6 +72,29 @@ export function LeaveApplyPage() {
       ignore = true;
     }
   }, [leaveType, startDate, effectiveEndDate]);
+
+  async function handleSubmit() {
+    if (!canSubmit) return;
+
+    const request: LeaveApplyRequest = {
+      leaveType,
+      startDate,
+      endDate: effectiveEndDate,
+      reason: reason.trim() || undefined,
+      approverIds: approvers.map((a) => a.id)
+    }
+
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      await createLeaveRequest(request);
+      navigate("/leave/me");
+    } catch(error) {
+      setSubmitError(toLeaveErrorMessage(getErrorCode(error)));
+      setSubmitting(false);
+    }
+  }
 
 
   return (
@@ -110,11 +136,16 @@ export function LeaveApplyPage() {
 
       <div className="mt-6 flex max-w-xl items-center justify-end gap-2">
         <Button onClick={() => navigate("/leave/me")}>취소</Button>
-        <Button variant="primary" disabled={!canSubmit}>신청하기</Button>
+        <Button variant="primary" onClick={handleSubmit} disabled={!canSubmit}>
+          {submitting ? "신청중..." : "신청하기"}
+        </Button>
       </div>
 
       {approvers.length === 0 && (
         <p className="mt-2 max-w-xl text-right text-sm text-fg-muted">결재자를 1명 이상 선택해야 신청할 수 있습니다.</p>
+      )}
+      {submitError && (
+        <p role="alert" className="mt-2 max-w-xl text-right text-sm text-danger">{submitError}</p>
       )}
     </div>
   );
