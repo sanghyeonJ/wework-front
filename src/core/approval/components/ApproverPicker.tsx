@@ -4,6 +4,7 @@ import { getApproverCandidates } from "../../member/api";
 import { toApprovalErrorMessage } from "../errorMessages";
 import { getErrorCode } from "../../../shared/api/client";
 import { TextField } from "../../../shared/components/TextField";
+import { Button } from "../../../shared/components/Button";
 
 const MAX_APPROVERS = 5;
 
@@ -23,6 +24,8 @@ export function ApproverPicker({selected, onChange}: Props) {
   const [candidates, setCandidates] = useState<ApproverCandidateResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const isFull = selected.length >= MAX_APPROVERS;
 
   useEffect(() => {
     let ignore = false;
@@ -59,6 +62,21 @@ export function ApproverPicker({selected, onChange}: Props) {
     onChange([...selected, candidate]);
   }
 
+  function remove(id: number) {
+    onChange(selected.filter((s) => s.id !== id));
+  }
+
+  function move(index: number, direction: -1 | 1) {
+    const target = index + direction;
+    if (target < 0 || target >= selected.length) return;
+
+    const next = [...selected];
+    const temp = next[index];
+    next[index] = next[target];
+    next[target] = temp;
+    onChange(next);
+  }
+
   return (
     <div>
       <p className="text-sm font-medium">결재자 (순서대로 결재)</p>
@@ -69,38 +87,50 @@ export function ApproverPicker({selected, onChange}: Props) {
       ) : (
         <ol className="mt-2 space-y-1">
           {selected.map((s, index) => (
-            <li key={s.id} className="text-sm">{index + 1}. {formatApprover(s)}</li>
+            <li key={s.id} className="flex items-center gap-2 text-sm">
+              <span className="flex-1">{index + 1}. {formatApprover(s)}</span>
+              <Button onClick={() => move(index, -1)} disabled={index === 0}>위</Button>
+              <Button onClick={() => move(index, 1)} disabled={index === selected.length - 1}>아래</Button>
+              <Button onClick={() => remove(s.id)}>삭제</Button>
+            </li>
           ))}
         </ol>
       )}
 
-      {/* 검색칸 */}
-      <TextField 
-        id="approver-keyword"
-        label="결재자 검색"
-        value={keyword}
-        onChange={(e) => setKeyword(e.target.value)}
-      />
+      {isFull ? (
+        <p className="mt-3 text-sm text-fg-muted">최대 {MAX_APPROVERS}명까지 선택할 수 있습니다.</p>
+      ) : (
+        <>
+          {/* 검색칸 */}
+          <TextField 
+            id="approver-keyword"
+            label="결재자 검색"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
 
-      <div className="mt-3">
-        {errorMessage ? (
-          <p role="alert" className="text-sm text-danger">{errorMessage}</p>
-        ) : loading ? (
-          <p className="text-sm text-fg-muted">로딩 중...</p>
-        ) : visibleCandidates.length === 0 ? (
-          <p className="text-sm text-fg-muted">결과가 없습니다.</p>
-        ) : (
-          <ul className="mt-2 space-y-1">
-            {visibleCandidates.map((c) => (
-              <li key={c.id}>
-                <button type="button" onClick={() => add(c)} className="w-full rounded-md px-3 py-2 text-left text-sm hover:bg-hover">
-                  {formatApprover(c)}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+          <div className="mt-3">
+            {errorMessage ? (
+              <p role="alert" className="text-sm text-danger">{errorMessage}</p>
+            ) : loading ? (
+              <p className="text-sm text-fg-muted">로딩 중...</p>
+            ) : visibleCandidates.length === 0 ? (
+              <p className="text-sm text-fg-muted">결과가 없습니다.</p>
+            ) : (
+              <ul className="mt-2 space-y-1">
+                {visibleCandidates.map((c) => (
+                  <li key={c.id}>
+                    <button type="button" onClick={() => add(c)} className="w-full rounded-md px-3 py-2 text-left text-sm hover:bg-hover">
+                      {formatApprover(c)}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </>
+      )}
+      
     </div>
   );
 }
