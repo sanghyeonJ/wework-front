@@ -10,10 +10,14 @@ import { toLeaveErrorMessage } from "../errorMessages";
 import { getErrorCode } from "../../../shared/api/client";
 import type { ApproverCandidateResponse } from "../../member/types";
 import { ApproverPicker } from "../../approval/components/ApproverPicker";
+import { useNavigate } from "react-router";
+import { Button } from "../../../shared/components/Button";
 
 const LEAVE_TYPES = Object.keys(LEAVE_TYPE_LABELS) as LeaveType[];
 
 export function LeaveApplyPage() {
+  const navigate = useNavigate();
+
   const [leaveType, setLeaveType] = useState<LeaveType>("ANNUAL");
   const [startDate, setStartDate] = useState(todayString);
   const [endDate, setEndDate] = useState(todayString);
@@ -27,6 +31,12 @@ export function LeaveApplyPage() {
   const [daysLoading, setDaysLoading] = useState(false);
 
   const [approvers, setApprovers] = useState<ApproverCandidateResponse[]>([]);
+
+  const canSubmit = days !== null &&
+    days > 0 &&
+    !daysLoading &&
+    approvers.length >= 1;
+
 
   useEffect(() => {
     // 날짜가 비어 있으면 묻지 않고 안내를 숨김
@@ -68,7 +78,7 @@ export function LeaveApplyPage() {
         description="휴가 종류와 기간, 결재자를 선택해 신청합니다."
       />
 
-      <form className="mt-5 max-w-xl space-y-4">
+      <form className="mt-5 max-w-xl space-y-4" onSubmit={(e) => e.preventDefault()}>
         <SelectField
           id="leave-type"
           label="종류"
@@ -97,6 +107,15 @@ export function LeaveApplyPage() {
       <div className="mt-6 max-w-xl">
         <ApproverPicker selected={approvers} onChange={setApprovers} />
       </div>
+
+      <div className="mt-6 flex max-w-xl items-center justify-end gap-2">
+        <Button onClick={() => navigate("/leave/me")}>취소</Button>
+        <Button variant="primary" disabled={!canSubmit}>신청하기</Button>
+      </div>
+
+      {approvers.length === 0 && (
+        <p className="mt-2 max-w-xl text-right text-sm text-fg-muted">결재자를 1명 이상 선택해야 신청할 수 있습니다.</p>
+      )}
     </div>
   );
 }
